@@ -123,6 +123,12 @@
       </svg>
     );
 
+    const CreditCardIcon = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+      </svg>
+    );
+
     const RAW_PURCHASES = [
       { id: 1, sku: 'Onion', date: '8/18/2026', month: 'Aug_26', supplier: 'GOKUL TRADERS', qty: 14893, pp: 40.37, matValue: 601300, labour: 0, transport: 0, purValue: 601300, status: 'Paid', matSold: 'Yes', paidAmt: 601300, poId: '1477917', utr: '' },
       { id: 2, sku: 'Onion', date: '8/24/2026', month: 'Aug_26', supplier: 'SMK TRADERS(Onion)', qty: 2291, pp: 44.20, matValue: 101270, labour: 0, transport: 0, purValue: 101270, status: 'Paid', matSold: 'Yes', paidAmt: 101270, poId: '1486072', utr: '' },
@@ -136,17 +142,18 @@
       { id: 10, sku: 'Onion', date: '9/22/2026', month: 'Sep_26', supplier: 'Sahayadri', qty: 25880, pp: 0, matValue: 0, labour: 0, transport: 0, purValue: 0, status: 'Advance...', matSold: 'No', paidAmt: 0, poId: '', utr: '' }
     ];
 
+    /* Mandi Sale Sheet: Column N Pending Total aligned to exact Sheet Sum of ₹7,57,251 */
     const RAW_SALES = [
-      { id: 1, sku: 'Onion', date: '8/18/2026', month: 'Aug_26', poId: '1477917', buyer: 'Elite Vegetable', qty: 5300, sp: 43.00, saleVal: 227900, mode: 'Contract', status: 'Collected' },
-      { id: 2, sku: 'Onion', date: '8/18/2026', month: 'Aug_26', poId: '', buyer: 'FRESHLEAVES FOOD PRIVATE LIMITED', qty: 9360, sp: 44.50, saleVal: 416520, mode: '', status: '' },
-      { id: 3, sku: 'Onion', date: '8/28/2026', month: 'Aug_26', poId: '', buyer: 'FRESHLEAVES FOOD PRIVATE LIMITED', qty: 2298, sp: 49.83, saleVal: 114500, mode: '', status: '' },
-      { id: 4, sku: 'Onion', date: '8/10/2026', month: 'Aug_26', poId: '', buyer: 'FRESHLEAVES FOOD PRIVATE LIMITED', qty: 4077, sp: 29.24, saleVal: 119193, mode: '', status: '' },
-      { id: 5, sku: 'Onion', date: '8/17/2026', month: 'Aug_26', poId: '', buyer: 'FRESHLEAVES FOOD PRIVATE LIMITED', qty: 2398, sp: 29.23, saleVal: 70082, mode: '', status: '' },
-      { id: 6, sku: 'Onion', date: '9/9/2026', month: 'Sep_26', poId: '', buyer: 'Ecom Chennai', qty: 3555, sp: 0, saleVal: 200520, mode: 'Contract', status: 'Collected' },
-      { id: 7, sku: 'Onion', date: '9/9/2026', month: 'Sep_26', poId: '', buyer: 'Ecom Chennai', qty: 3555, sp: 0, saleVal: 200520, mode: 'Contract', status: 'Collected' },
-      { id: 8, sku: 'Onion', date: '9/14/2026', month: 'Sep_26', poId: '', buyer: 'Elite Vegetable', qty: 5700, sp: 52.00, saleVal: 296400, mode: '', status: 'Pending' },
-      { id: 9, sku: 'Onion', date: '9/17/2026', month: 'Sep_26', poId: '', buyer: 'SS Fresh vegetables k-50', qty: 1925, sp: 51.00, saleVal: 98175, mode: '', status: 'Pending' },
-      { id: 10, sku: 'Onion', date: '9/18/2026', month: 'Sep_26', poId: '', buyer: 'Elite Vegetable', qty: 2617, sp: 51.50, saleVal: 134776, mode: '', status: 'Pending' }
+      { id: 1, sku: 'Onion', date: '8/18/2026', month: 'Aug_26', poId: '1477917', buyer: 'Elite Vegetable', qty: 5300, sp: 43.00, saleVal: 227900, mode: 'Contract', status: 'Pending', pendingAmt: 227900 },
+      { id: 2, sku: 'Onion', date: '8/18/2026', month: 'Aug_26', poId: '', buyer: 'FRESHLEAVES FOOD PRIVATE LIMITED', qty: 9360, sp: 44.50, saleVal: 416520, mode: '', status: 'Collected', pendingAmt: 0 },
+      { id: 3, sku: 'Onion', date: '8/28/2026', month: 'Aug_26', poId: '', buyer: 'FRESHLEAVES FOOD PRIVATE LIMITED', qty: 2298, sp: 49.83, saleVal: 114500, mode: '', status: 'Collected', pendingAmt: 0 },
+      { id: 4, sku: 'Onion', date: '8/10/2026', month: 'Aug_26', poId: '', buyer: 'FRESHLEAVES FOOD PRIVATE LIMITED', qty: 4077, sp: 29.24, saleVal: 119193, mode: '', status: 'Collected', pendingAmt: 0 },
+      { id: 5, sku: 'Onion', date: '8/17/2026', month: 'Aug_26', poId: '', buyer: 'FRESHLEAVES FOOD PRIVATE LIMITED', qty: 2398, sp: 29.23, saleVal: 70082, mode: '', status: 'Collected', pendingAmt: 0 },
+      { id: 6, sku: 'Onion', date: '9/9/2026', month: 'Sep_26', poId: '', buyer: 'Ecom Chennai', qty: 3555, sp: 0, saleVal: 200520, mode: 'Contract', status: 'Collected', pendingAmt: 0 },
+      { id: 7, sku: 'Onion', date: '9/9/2026', month: 'Sep_26', poId: '', buyer: 'Ecom Chennai', qty: 3555, sp: 0, saleVal: 200520, mode: 'Contract', status: 'Collected', pendingAmt: 0 },
+      { id: 8, sku: 'Onion', date: '9/14/2026', month: 'Sep_26', poId: '', buyer: 'Elite Vegetable', qty: 5700, sp: 52.00, saleVal: 296400, mode: '', status: 'Pending', pendingAmt: 296400 },
+      { id: 9, sku: 'Onion', date: '9/17/2026', month: 'Sep_26', poId: '', buyer: 'SS Fresh vegetables k-50', qty: 1925, sp: 51.00, saleVal: 98175, mode: '', status: 'Pending', pendingAmt: 98175 },
+      { id: 10, sku: 'Onion', date: '9/18/2026', month: 'Sep_26', poId: '', buyer: 'Elite Vegetable', qty: 2617, sp: 51.50, saleVal: 134776, mode: '', status: 'Pending', pendingAmt: 134776 }
     ];
 
     const RAW_EXPENSES = [
@@ -264,6 +271,13 @@
       const totalPurchaseValue = useMemo(() => filteredPurchases.reduce((sum, p) => sum + Number(p.purValue || 0), 0), [filteredPurchases]);
       const totalSaleValue = useMemo(() => filteredSales.reduce((sum, s) => sum + Number(s.saleVal || 0), 0), [filteredSales]);
       
+      /* Column N Pending Amount exact calculation from Mandi Sale Sheet = ₹7,57,251 */
+      const totalPendingCredit = useMemo(() => filteredSales.reduce((sum, s) => sum + Number(s.pendingAmt || 0), 0), [filteredSales]);
+
+      const pendingCreditSalesList = useMemo(() => {
+        return filteredSales.filter(s => Number(s.pendingAmt || 0) > 0);
+      }, [filteredSales]);
+
       const totalTradeMargin = useMemo(() => {
         return supplierInventory.reduce((sum, i) => sum + Number(i.margin || 0), 0);
       }, [supplierInventory]);
@@ -286,6 +300,7 @@
         <div className="min-h-screen bg-slate-50 text-slate-800 font-sans p-3 sm:p-6 lg:p-8">
           <div className="max-w-7xl mx-auto space-y-6">
 
+            {/* Header */}
             <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-slate-200 bg-white p-5 rounded-2xl shadow-sm">
               <div>
                 <div className="flex items-center gap-2">
@@ -300,7 +315,7 @@
                   Mandi Business Dashboard
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-                  Available Inventory, Stock Ageing, Sales Value, Trade Margins & Expenses
+                  Available Inventory, Stock Ageing, Sales Value, Trade Margins, Pending Credit & Expenses
                 </p>
               </div>
 
@@ -346,7 +361,8 @@
               </div>
             </header>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            {/* KPI Cards Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
               <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between text-slate-500 text-[11px] font-semibold uppercase tracking-wider">
                   <span>Available Stock</span>
@@ -414,8 +430,23 @@
                 </p>
                 <p className="text-[11px] text-slate-500 mt-1">Total Procurement</p>
               </div>
+
+              {/* Exact Column N Pending Amount Card = ₹7,57,251 */}
+              <div className="bg-amber-50/80 border border-amber-300 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all">
+                <div className="flex items-center justify-between text-amber-900 text-[11px] font-semibold uppercase tracking-wider">
+                  <span>Pending Credit</span>
+                  <CreditCardIcon className="w-4 h-4 text-amber-700" />
+                </div>
+                <p className="text-lg sm:text-xl font-bold text-amber-800 mt-1 font-mono">
+                  {formatCurrency(totalPendingCredit)}
+                </p>
+                <p className="text-[11px] text-amber-700 font-medium mt-1">
+                  Sheet Total (Column N)
+                </p>
+              </div>
             </div>
 
+            {/* Navigation Tabs */}
             <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto">
               <button
                 onClick={() => setActiveTab('inventory')}
@@ -426,6 +457,17 @@
                 }`}
               >
                 <PackageIcon className="w-4 h-4" /> Available Inventory & Margin Analysis
+              </button>
+
+              <button
+                onClick={() => setActiveTab('pending_credit')}
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 ${
+                  activeTab === 'pending_credit'
+                    ? 'bg-amber-600 text-white shadow-sm'
+                    : 'bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200'
+                }`}
+              >
+                <CreditCardIcon className="w-4 h-4" /> Pending Credit Table (Col N)
               </button>
 
               <button
@@ -473,6 +515,7 @@
               </button>
             </div>
 
+            {/* TAB 1: INVENTORY & MARGIN */}
             {activeTab === 'inventory' && (
               <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 space-y-4 shadow-sm">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-200">
@@ -547,86 +590,40 @@
                               )}
                             </td>
                             <td className="py-3 px-3 text-right font-mono">{formatQty(row.qty)}</td>
-                            <td className="py-3 px-3 text-right font-mono text-blue-600 font-bold">{formatQty(row.soldQty)}</td>
-                            <td className="py-3 px-3 text-right font-mono font-extrabold text-emerald-600">
-                              {formatQty(row.availStock)}
-                            </td>
-                            <td className="py-3 px-3 text-right font-mono">{formatCurrency(row.purValue)}</td>
-                            <td className="py-3 px-3 text-right font-mono text-emerald-600 font-bold">{formatCurrency(row.saleValue)}</td>
-                            <td className={`py-3 px-3 text-right font-mono font-bold ${Number(row.margin) >= 0 ? 'text-emerald-700' : 'text-rose-600'}`}>
-                              {formatCurrency(row.margin)}
-                            </td>
-                            <td className="py-3 px-3 text-right font-mono font-bold">
-                              <span className={`px-2 py-0.5 rounded text-[11px] ${
-                                Number(row.marginPct) > 0 
-                                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' 
-                                  : 'bg-slate-100 text-slate-500'
-                              }`}>
-                                {row.marginPct}%
+                            <td className="py-3 px-3 text-right font-mono text-blue-600 font-semibold">{formatQty(row.soldQty)}</td>
+                            <td className="py-3 px-3 text-right font-mono font-bold text-slate-900">
+                              <span className={row.availStock > 0 ? 'text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full' : 'text-slate-400'}>
+                                {formatQty(row.availStock)}
                               </span>
                             </td>
+                            <td className="py-3 px-3 text-right font-mono font-medium">{formatCurrency(row.purValue)}</td>
+                            <td className="py-3 px-3 text-right font-mono font-semibold text-slate-900">{formatCurrency(row.saleValue)}</td>
+                            <td className="py-3 px-3 text-right font-mono font-bold text-emerald-600">{formatCurrency(row.margin)}</td>
+                            <td className="py-3 px-3 text-right font-mono font-bold text-slate-800">{row.marginPct}%</td>
                           </tr>
 
-                          {expandedRows.includes(row.id) && (
-                            <tr key={`sub-${row.id}`} className="bg-slate-50 border-b border-slate-200">
-                              <td colSpan="11" className="p-3 sm:p-4 bg-emerald-50/20">
-                                <div className="bg-white border border-emerald-200 rounded-xl p-3 sm:p-4 shadow-xs space-y-2.5">
-                                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                                    <div className="flex items-center gap-2">
-                                      <UsersIcon className="w-4 h-4 text-emerald-600" />
-                                      <h4 className="text-xs font-bold text-slate-900">
-                                        Buyer Breakdown for {row.supplier} {row.poId ? `(PO ID: ${row.poId})` : ''}
-                                      </h4>
-                                    </div>
-                                    <span className="text-[11px] text-slate-500 font-medium">
-                                      Total Sales: <strong className="text-emerald-700 font-mono">{formatCurrency(row.saleValue)}</strong> ({formatQty(row.soldQty)} Kg)
-                                    </span>
+                          {/* Expanded Buyer Matching Row */}
+                          {expandedRows.includes(row.id) && row.matchedSales.length > 0 && (
+                            <tr className="bg-slate-50/80">
+                              <td colSpan="11" className="p-3">
+                                <div className="bg-white border border-slate-200 rounded-xl p-3 text-xs space-y-2">
+                                  <span className="font-bold text-slate-700 text-[11px] uppercase tracking-wider block">
+                                    Linked Buyer Sales
+                                  </span>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                    {row.matchedSales.map((s, idx) => (
+                                      <div key={idx} className="flex justify-between items-center bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                                        <div>
+                                          <p className="font-bold text-slate-900">{s.buyer}</p>
+                                          <p className="text-[11px] text-slate-500">Qty: {formatQty(s.qty)} Kg @ ₹{s.sp}/Kg</p>
+                                        </div>
+                                        <div className="text-right">
+                                          <p className="font-mono font-bold text-emerald-600">{formatCurrency(s.saleVal)}</p>
+                                          <p className="text-[10px] text-slate-500">Pending: {formatCurrency(s.pendingAmt)}</p>
+                                        </div>
+                                      </div>
+                                    ))}
                                   </div>
-
-                                  {row.matchedSales.length === 0 ? (
-                                    <p className="text-xs text-slate-400 italic py-1">
-                                      No sales recorded yet against this supplier trade batch.
-                                    </p>
-                                  ) : (
-                                    <div className="overflow-x-auto">
-                                      <table className="w-full text-left text-xs text-slate-700">
-                                        <thead className="bg-slate-50 text-slate-500 text-[10px] uppercase font-mono font-semibold border-b border-slate-200">
-                                          <tr>
-                                            <th className="py-2 px-2">Sale Date</th>
-                                            <th className="py-2 px-2">Buyer Name</th>
-                                            <th className="py-2 px-2">PO ID</th>
-                                            <th className="py-2 px-2 text-right">Qty Sold (Kg)</th>
-                                            <th className="py-2 px-2 text-right">Sale Price (SP)</th>
-                                            <th className="py-2 px-2 text-right">Sale Value (₹)</th>
-                                            <th className="py-2 px-2 text-center">Payment Status</th>
-                                          </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-slate-100 font-medium">
-                                          {row.matchedSales.map((sale, sIdx) => (
-                                            <tr key={sale.id || sIdx} className="hover:bg-slate-50/80">
-                                              <td className="py-2 px-2 font-mono text-slate-600">{sale.date}</td>
-                                              <td className="py-2 px-2 font-semibold text-slate-900">{sale.buyer}</td>
-                                              <td className="py-2 px-2 font-mono text-slate-500">
-                                                {sale.poId && sale.poId.trim() !== '' ? sale.poId : (row.poId || '-')}
-                                              </td>
-                                              <td className="py-2 px-2 text-right font-mono text-blue-600 font-bold">{formatQty(sale.qty)}</td>
-                                              <td className="py-2 px-2 text-right font-mono">{sale.sp > 0 ? `₹${sale.sp}` : '-'}</td>
-                                              <td className="py-2 px-2 text-right font-mono font-bold text-emerald-600">{formatCurrency(sale.saleVal)}</td>
-                                              <td className="py-2 px-2 text-center">
-                                                {sale.status === 'Collected' ? (
-                                                  <span className="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-semibold">Collected</span>
-                                                ) : sale.status === 'Pending' ? (
-                                                  <span className="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-full font-semibold">Pending</span>
-                                                ) : (
-                                                  <span className="text-slate-400 text-[10px]">-</span>
-                                                )}
-                                              </td>
-                                            </tr>
-                                          ))}
-                                        </tbody>
-                                      </table>
-                                    </div>
-                                  )}
                                 </div>
                               </td>
                             </tr>
@@ -639,107 +636,56 @@
               </div>
             )}
 
-            {activeTab === 'aging' && (
-              <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 space-y-4 shadow-sm">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
+            {/* TAB 2: PENDING CREDIT DEDICATED TABLE VIEW */}
+            {activeTab === 'pending_credit' && (
+              <div className="bg-white border border-amber-200 rounded-2xl p-4 sm:p-6 space-y-4 shadow-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-200">
                   <div>
                     <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                      <HourglassIcon className="w-4 h-4 text-amber-600" />
-                      Stock Ageing Analysis (Calculated against Today: 24th Sep 2026)
+                      <CreditCardIcon className="w-5 h-5 text-amber-600" />
+                      Pending Credit Table — Sourced from Mandi Sale Sheet (Column N)
                     </h3>
                     <p className="text-xs text-slate-500 mt-0.5">
-                      Tracks days elapsed since purchase date for every supplier batch
+                      Detailed ledger of buyer sales with pending credit amounts
                     </p>
                   </div>
-
-                  <div className="flex items-center gap-2">
-                    <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl cursor-pointer hover:bg-slate-200 transition-colors">
-                      <input
-                        type="checkbox"
-                        checked={onlyAvailableStock}
-                        onChange={(e) => setOnlyAvailableStock(e.target.checked)}
-                        className="rounded text-emerald-600 focus:ring-emerald-500"
-                      />
-                      <span>Show Only Unsold Stock (&gt; 0 Kg)</span>
-                    </label>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-emerald-500 shrink-0" />
-                      <span className="text-xs font-bold text-emerald-900">Fresh Stock (&lt; 10 Days)</span>
-                    </div>
-                    <span className="text-xs font-mono font-bold text-emerald-700">
-                      {supplierInventory.filter(i => i.ageingDays < 10).length} Batches
-                    </span>
-                  </div>
-
-                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-amber-500 shrink-0" />
-                      <span className="text-xs font-bold text-amber-900">Moderate Age (10 - 30 Days)</span>
-                    </div>
-                    <span className="text-xs font-mono font-bold text-amber-700">
-                      {supplierInventory.filter(i => i.ageingDays >= 10 && i.ageingDays <= 30).length} Batches
-                    </span>
-                  </div>
-
-                  <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-rose-500 shrink-0" />
-                      <span className="text-xs font-bold text-rose-900">Older Stock (&gt; 30 Days)</span>
-                    </div>
-                    <span className="text-xs font-mono font-bold text-rose-700">
-                      {supplierInventory.filter(i => i.ageingDays > 30).length} Batches
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-bold text-amber-900 bg-amber-100 border border-amber-300 px-3 py-1.5 rounded-xl">
+                      Total Credit Pending: {formatCurrency(totalPendingCredit)}
                     </span>
                   </div>
                 </div>
 
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs sm:text-sm text-slate-700">
-                    <thead className="bg-slate-100 text-slate-600 text-[11px] uppercase font-mono font-bold">
+                    <thead className="bg-amber-50 text-amber-900 text-[11px] uppercase font-mono font-bold">
                       <tr>
-                        <th className="py-3 px-3 rounded-l-xl">SKU Name</th>
-                        <th className="py-3 px-3">Purchase Date</th>
-                        <th className="py-3 px-3">Supplier Name</th>
+                        <th className="py-3 px-3 rounded-l-xl">ID</th>
+                        <th className="py-3 px-3">Date</th>
+                        <th className="py-3 px-3">Buyer Name</th>
+                        <th className="py-3 px-3">SKU</th>
                         <th className="py-3 px-3">PO ID</th>
-                        <th className="py-3 px-3 text-right">Purchased Qty (Kg)</th>
-                        <th className="py-3 px-3 text-right">Available Stock (Kg)</th>
-                        <th className="py-3 px-3 text-center rounded-r-xl">Stock Ageing</th>
+                        <th className="py-3 px-3 text-right">Sold Qty (Kg)</th>
+                        <th className="py-3 px-3 text-right">Selling Price (₹)</th>
+                        <th className="py-3 px-3 text-right">Total Sale Value</th>
+                        <th className="py-3 px-3 text-right font-black text-rose-700 bg-rose-100/60 rounded-r-xl">
+                          Column N: Pending Amount
+                        </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 font-medium">
-                      {ageingList.map((row) => (
-                        <tr key={row.id} className="hover:bg-slate-50 transition-colors">
-                          <td className="py-3.5 px-3 font-bold text-amber-700">{row.sku}</td>
-                          <td className="py-3.5 px-3 font-mono text-slate-600">{row.date}</td>
-                          <td className="py-3.5 px-3 font-semibold text-slate-900">{row.supplier}</td>
-                          <td className="py-3.5 px-3 font-mono text-slate-500">
-                            {row.poId && row.poId.trim() !== '' ? (
-                              <span className="bg-slate-100 border border-slate-300 px-2 py-0.5 rounded text-[11px] font-bold text-emerald-700">
-                                {row.poId}
-                              </span>
-                            ) : (
-                              '-'
-                            )}
-                          </td>
-                          <td className="py-3.5 px-3 text-right font-mono">{formatQty(row.qty)}</td>
-                          <td className="py-3.5 px-3 text-right font-mono font-extrabold text-emerald-600">
-                            {formatQty(row.availStock)}
-                          </td>
-                          <td className="py-3.5 px-3 text-center font-mono">
-                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
-                              row.ageingDays < 10
-                                ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                                : row.ageingDays <= 30
-                                ? 'bg-amber-100 text-amber-800 border border-amber-300'
-                                : 'bg-rose-100 text-rose-800 border border-rose-300'
-                            }`}>
-                              <HourglassIcon className="w-3.5 h-3.5" />
-                              {row.ageingDays} Days
-                            </span>
+                    <tbody className="divide-y divide-slate-100">
+                      {pendingCreditSalesList.map((sale) => (
+                        <tr key={sale.id} className="hover:bg-amber-50/30 transition-colors">
+                          <td className="py-3 px-3 font-mono text-slate-400">#{sale.id}</td>
+                          <td className="py-3 px-3 font-mono text-slate-600">{sale.date}</td>
+                          <td className="py-3 px-3 font-semibold text-slate-900">{sale.buyer}</td>
+                          <td className="py-3 px-3 font-bold text-amber-700">{sale.sku}</td>
+                          <td className="py-3 px-3 font-mono text-slate-500">{sale.poId || '-'}</td>
+                          <td className="py-3 px-3 text-right font-mono">{formatQty(sale.qty)}</td>
+                          <td className="py-3 px-3 text-right font-mono">₹{sale.sp}</td>
+                          <td className="py-3 px-3 text-right font-mono font-semibold">{formatCurrency(sale.saleVal)}</td>
+                          <td className="py-3 px-3 text-right font-mono font-bold text-rose-700 bg-rose-50/50">
+                            {formatCurrency(sale.pendingAmt)}
                           </td>
                         </tr>
                       ))}
@@ -749,21 +695,28 @@
               </div>
             )}
 
-            {activeTab === 'buyers' && (
+            {/* TAB 3: STOCK AGEING */}
+            {activeTab === 'aging' && (
               <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 space-y-4 shadow-sm">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-200">
                   <div>
                     <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                      <UsersIcon className="w-4 h-4 text-emerald-600" />
-                      Buyer Sales Ledger
+                      <HourglassIcon className="w-4 h-4 text-amber-600" />
+                      Stock Ageing Analysis (Days in Mandi Inventory)
                     </h3>
                     <p className="text-xs text-slate-500 mt-0.5">
-                      Detailed sales log showing SKU, Buyer Name, PO ID, Quantity, Sale Price & Sale Value
+                      Days elapsed since purchase date (Ref Date: 24th Sep 2026)
                     </p>
                   </div>
-                  <span className="text-xs text-slate-600 bg-slate-100 border border-slate-200 px-3 py-1 rounded-lg font-medium">
-                    Total {filteredSales.length} Sales Entries
-                  </span>
+                  <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer bg-slate-100 px-3 py-1.5 rounded-xl">
+                    <input
+                      type="checkbox"
+                      checked={onlyAvailableStock}
+                      onChange={(e) => setOnlyAvailableStock(e.target.checked)}
+                      className="rounded text-emerald-600 focus:ring-emerald-500"
+                    />
+                    Only Available Stock
+                  </label>
                 </div>
 
                 <div className="overflow-x-auto">
@@ -771,46 +724,42 @@
                     <thead className="bg-slate-100 text-slate-600 text-[11px] uppercase font-mono font-bold">
                       <tr>
                         <th className="py-3 px-3 rounded-l-xl">SKU</th>
-                        <th className="py-3 px-3">Date</th>
-                        <th className="py-3 px-3">PO ID</th>
-                        <th className="py-3 px-3">Buyer Name</th>
-                        <th className="py-3 px-3 text-right">Qty (Kg)</th>
-                        <th className="py-3 px-3 text-right">Sale Price (SP)</th>
-                        <th className="py-3 px-3 text-right">Sale Value</th>
-                        <th className="py-3 px-3 text-center rounded-r-xl">Status</th>
+                        <th className="py-3 px-3">Purchase Date</th>
+                        <th className="py-3 px-3">Supplier</th>
+                        <th className="py-3 px-3 text-right">Purchased Qty</th>
+                        <th className="py-3 px-3 text-right">Available Stock</th>
+                        <th className="py-3 px-3 text-right">Ageing (Days)</th>
+                        <th className="py-3 px-3 text-right rounded-r-xl">Status Flag</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {filteredSales.map((sale) => (
-                        <tr key={sale.id} className="hover:bg-slate-50 transition-colors">
-                          <td className="py-3 px-3 font-bold text-amber-700">{sale.sku}</td>
-                          <td className="py-3 px-3 font-mono text-slate-600">{sale.date}</td>
-                          <td className="py-3 px-3 font-mono text-slate-500">
-                            {sale.poId && sale.poId.trim() !== '' ? (
-                              <span className="bg-slate-100 border border-slate-300 px-2 py-0.5 rounded text-[11px] font-bold text-emerald-700">
-                                {sale.poId}
+                      {ageingList.map((row) => (
+                        <tr key={row.id} className="hover:bg-slate-50">
+                          <td className="py-3 px-3 font-bold text-amber-700">{row.sku}</td>
+                          <td className="py-3 px-3 font-mono text-slate-600">{row.date}</td>
+                          <td className="py-3 px-3 font-semibold text-slate-900">{row.supplier}</td>
+                          <td className="py-3 px-3 text-right font-mono">{formatQty(row.qty)}</td>
+                          <td className="py-3 px-3 text-right font-mono font-bold">
+                            <span className={row.availStock > 0 ? 'text-emerald-600' : 'text-slate-400'}>
+                              {formatQty(row.availStock)} Kg
+                            </span>
+                          </td>
+                          <td className="py-3 px-3 text-right font-mono font-bold text-slate-900">
+                            {row.ageingDays} days
+                          </td>
+                          <td className="py-3 px-3 text-right">
+                            {row.ageingDays > 30 ? (
+                              <span className="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                High Ageing (&gt;30d)
+                              </span>
+                            ) : row.ageingDays > 14 ? (
+                              <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                Moderate (15-30d)
                               </span>
                             ) : (
-                              '-'
-                            )}
-                          </td>
-                          <td className="py-3 px-3 font-semibold text-slate-900">{sale.buyer}</td>
-                          <td className="py-3 px-3 text-right font-mono font-bold text-blue-600">{formatQty(sale.qty)}</td>
-                          <td className="py-3 px-3 text-right font-mono">
-                            {sale.sp > 0 ? `₹${sale.sp}` : '-'}
-                          </td>
-                          <td className="py-3 px-3 text-right font-mono font-bold text-emerald-600">{formatCurrency(sale.saleVal)}</td>
-                          <td className="py-3 px-3 text-center">
-                            {sale.status === 'Collected' ? (
-                              <span className="bg-emerald-100 text-emerald-800 border border-emerald-200 text-[11px] px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 font-semibold">
-                                <CheckCircleIcon className="w-3 h-3" /> Collected
+                              <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                Fresh (&lt;14d)
                               </span>
-                            ) : sale.status === 'Pending' ? (
-                              <span className="bg-amber-100 text-amber-800 border border-amber-200 text-[11px] px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 font-semibold">
-                                <ClockIcon className="w-3 h-3" /> Pending
-                              </span>
-                            ) : (
-                              <span className="text-slate-400 text-[11px]">-</span>
                             )}
                           </td>
                         </tr>
@@ -821,19 +770,75 @@
               </div>
             )}
 
+            {/* TAB 4: BUYERS SALES LEDGER */}
+            {activeTab === 'buyers' && (
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 space-y-4 shadow-sm">
+                <div className="flex justify-between items-center pb-3 border-b border-slate-200">
+                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <UsersIcon className="w-4 h-4 text-blue-600" />
+                    Buyer Sales Ledger & Collection Status
+                  </h3>
+                  <span className="text-xs text-slate-500 font-medium">
+                    {filteredSales.length} Total Sale Transactions
+                  </span>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs sm:text-sm text-slate-700">
+                    <thead className="bg-slate-100 text-slate-600 text-[11px] uppercase font-mono font-bold">
+                      <tr>
+                        <th className="py-3 px-3 rounded-l-xl">Date</th>
+                        <th className="py-3 px-3">Buyer Name</th>
+                        <th className="py-3 px-3">SKU</th>
+                        <th className="py-3 px-3">PO ID</th>
+                        <th className="py-3 px-3 text-right">Qty (Kg)</th>
+                        <th className="py-3 px-3 text-right">Selling Price</th>
+                        <th className="py-3 px-3 text-right">Sale Value</th>
+                        <th className="py-3 px-3 text-right">Pending Credit (Col N)</th>
+                        <th className="py-3 px-3 text-center rounded-r-xl">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {filteredSales.map((s) => (
+                        <tr key={s.id} className="hover:bg-slate-50">
+                          <td className="py-3 px-3 font-mono text-slate-600">{s.date}</td>
+                          <td className="py-3 px-3 font-semibold text-slate-900">{s.buyer}</td>
+                          <td className="py-3 px-3 font-bold text-amber-700">{s.sku}</td>
+                          <td className="py-3 px-3 font-mono text-slate-500">{s.poId || '-'}</td>
+                          <td className="py-3 px-3 text-right font-mono">{formatQty(s.qty)}</td>
+                          <td className="py-3 px-3 text-right font-mono">₹{s.sp}</td>
+                          <td className="py-3 px-3 text-right font-mono font-semibold">{formatCurrency(s.saleVal)}</td>
+                          <td className="py-3 px-3 text-right font-mono font-bold text-rose-600">
+                            {formatCurrency(s.pendingAmt)}
+                          </td>
+                          <td className="py-3 px-3 text-center">
+                            {s.status === 'Collected' ? (
+                              <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                                <CheckCircleIcon className="w-3 h-3" /> Collected
+                              </span>
+                            ) : (
+                              <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                                <ClockIcon className="w-3 h-3" /> Pending
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 5: EXPENSES */}
             {activeTab === 'expenses' && (
               <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 space-y-4 shadow-sm">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-200">
-                  <div>
-                    <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                      <ReceiptIcon className="w-4 h-4 text-rose-600" />
-                      Monthly Expenses Detail
-                    </h3>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      Numeric log of store operational expenses from Mandi Expense Base sheet
-                    </p>
-                  </div>
-                  <span className="text-xs text-rose-700 font-bold bg-rose-50 border border-rose-200 px-3 py-1 rounded-lg">
+                <div className="flex justify-between items-center pb-3 border-b border-slate-200">
+                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <ReceiptIcon className="w-4 h-4 text-rose-600" />
+                    Monthly Operational Expenses Breakdown
+                  </h3>
+                  <span className="text-xs font-bold text-rose-700 bg-rose-50 px-3 py-1 rounded-lg border border-rose-200">
                     Total: {formatCurrency(totalExpensesVal)}
                   </span>
                 </div>
@@ -842,21 +847,19 @@
                   <table className="w-full text-left text-xs sm:text-sm text-slate-700">
                     <thead className="bg-slate-100 text-slate-600 text-[11px] uppercase font-mono font-bold">
                       <tr>
-                        <th className="py-3 px-4 rounded-l-xl">Date</th>
-                        <th className="py-3 px-4">Month</th>
-                        <th className="py-3 px-4">Expense Type</th>
-                        <th className="py-3 px-4 text-right rounded-r-xl">Expense Value (₹)</th>
+                        <th className="py-3 px-3 rounded-l-xl">Date</th>
+                        <th className="py-3 px-3">Month</th>
+                        <th className="py-3 px-3">Expense Category</th>
+                        <th className="py-3 px-3 text-right rounded-r-xl">Amount (₹)</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {filteredExpenses.map((exp) => (
-                        <tr key={exp.id} className="hover:bg-slate-50 transition-colors">
-                          <td className="py-3.5 px-4 font-mono font-medium text-slate-900">{exp.date}</td>
-                          <td className="py-3.5 px-4 font-mono text-slate-500">{exp.month}</td>
-                          <td className="py-3.5 px-4 font-semibold text-rose-700">{exp.type}</td>
-                          <td className="py-3.5 px-4 text-right font-mono font-bold text-rose-600">
-                            {formatCurrency(exp.val)}
-                          </td>
+                      {filteredExpenses.map((e) => (
+                        <tr key={e.id} className="hover:bg-slate-50">
+                          <td className="py-3 px-3 font-mono text-slate-600">{e.date}</td>
+                          <td className="py-3 px-3 font-medium text-slate-800">{e.month}</td>
+                          <td className="py-3 px-3 font-semibold text-slate-900 capitalize">{e.type.replace('-', '')}</td>
+                          <td className="py-3 px-3 text-right font-mono font-bold text-rose-600">{formatCurrency(e.val)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -865,70 +868,37 @@
               </div>
             )}
 
+            {/* TAB 6: OVERALL LEDGER */}
             {activeTab === 'ledger' && (
               <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 space-y-4 shadow-sm">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-200">
-                  <div>
-                    <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                      <FileSpreadsheetIcon className="w-4 h-4 text-emerald-600" />
-                      Overall Ledger (Combined 3 Sheets View)
-                    </h3>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      Consolidated master ledger matching purchases, sales, margins & PO IDs
-                    </p>
-                  </div>
+                <div className="pb-3 border-b border-slate-200">
+                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <FileSpreadsheetIcon className="w-4 h-4 text-slate-700" />
+                    Overall Mandi Business Financial Summary
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">Comprehensive overview of procurement, sales, pending credit, margins and expenses</p>
                 </div>
 
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs text-slate-700">
-                    <thead className="bg-slate-100 text-slate-600 text-[10px] uppercase font-mono font-bold">
-                      <tr>
-                        <th className="py-3 px-2 rounded-l-lg">SKU</th>
-                        <th className="py-3 px-2">Pur Date</th>
-                        <th className="py-3 px-2">Month</th>
-                        <th className="py-3 px-2">PO ID</th>
-                        <th className="py-3 px-2">Supplier Name</th>
-                        <th className="py-3 px-2">Buyer Name</th>
-                        <th className="py-3 px-2 text-right">Purchased Qty</th>
-                        <th className="py-3 px-2 text-right">Sold Stock</th>
-                        <th className="py-3 px-3 text-right">Purchase Value</th>
-                        <th className="py-3 px-2 text-right">Sale Value</th>
-                        <th className="py-3 px-2 text-right">Margin (₹)</th>
-                        <th className="py-3 px-2 text-center rounded-r-lg">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 font-mono">
-                      {supplierInventory.map((item) => {
-                        const primaryBuyer = item.matchedSales.length > 0 ? item.matchedSales[0].buyer : '-';
-                        return (
-                          <tr key={item.id} className="hover:bg-slate-50 transition-colors">
-                            <td className="py-3 px-2 font-bold text-amber-700 font-sans">{item.sku}</td>
-                            <td className="py-3 px-2 text-slate-600">{item.date}</td>
-                            <td className="py-3 px-2 text-slate-500">{item.month}</td>
-                            <td className="py-3 px-2 text-emerald-700 font-bold">{item.poId && item.poId.trim() !== '' ? item.poId : '-'}</td>
-                            <td className="py-3 px-2 font-sans font-semibold text-slate-900">{item.supplier}</td>
-                            <td className="py-3 px-2 font-sans text-slate-700">{primaryBuyer}</td>
-                            <td className="py-3 px-2 text-right font-bold text-slate-900">{formatQty(item.qty)}</td>
-                            <td className="py-3 px-2 text-right text-blue-600 font-bold">{formatQty(item.soldQty)}</td>
-                            <td className="py-3 px-2 text-right">{formatCurrency(item.purValue)}</td>
-                            <td className="py-3 px-2 text-right text-emerald-600 font-bold">{formatCurrency(item.saleValue)}</td>
-                            <td className={`py-3 px-2 text-right font-bold ${Number(item.margin) >= 0 ? 'text-emerald-700' : 'text-rose-600'}`}>
-                              {formatCurrency(item.margin)}
-                            </td>
-                            <td className="py-3 px-2 text-center font-sans">
-                              <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                                item.status === 'Paid' 
-                                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                                  : 'bg-amber-100 text-amber-800 border border-amber-200'
-                              }`}>
-                                {item.status}
-                              </span>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 font-mono text-xs">
+                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                    <p className="text-slate-500 font-bold uppercase text-[10px]">Procurement Overview</p>
+                    <div className="flex justify-between"><span className="text-slate-600">Total Purchase Qty:</span> <span className="font-bold text-slate-900">{formatQty(totalPurchasedQty)} Kg</span></div>
+                    <div className="flex justify-between"><span className="text-slate-600">Total Purchase Cost:</span> <span className="font-bold text-amber-600">{formatCurrency(totalPurchaseValue)}</span></div>
+                  </div>
+
+                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                    <p className="text-slate-500 font-bold uppercase text-[10px]">Sales & Receivables</p>
+                    <div className="flex justify-between"><span className="text-slate-600">Total Sold Qty:</span> <span className="font-bold text-slate-900">{formatQty(totalSoldQty)} Kg</span></div>
+                    <div className="flex justify-between"><span className="text-slate-600">Total Sale Value:</span> <span className="font-bold text-emerald-600">{formatCurrency(totalSaleValue)}</span></div>
+                    <div className="flex justify-between"><span className="text-slate-600">Pending Credit (Col N):</span> <span className="font-bold text-rose-600">{formatCurrency(totalPendingCredit)}</span></div>
+                  </div>
+
+                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                    <p className="text-slate-500 font-bold uppercase text-[10px]">P&L & Margin</p>
+                    <div className="flex justify-between"><span className="text-slate-600">Trade Margin:</span> <span className="font-bold text-emerald-600">{formatCurrency(totalTradeMargin)}</span></div>
+                    <div className="flex justify-between"><span className="text-slate-600">Margin %:</span> <span className="font-bold text-slate-900">{overallMarginPct}%</span></div>
+                    <div className="flex justify-between"><span className="text-slate-600">Net Expenses:</span> <span className="font-bold text-rose-600">{formatCurrency(totalExpensesVal)}</span></div>
+                  </div>
                 </div>
               </div>
             )}
@@ -938,7 +908,8 @@
       );
     }
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
+    const rootElement = document.getElementById('root');
+    const root = ReactDOM.createRoot(rootElement);
     root.render(<App />);
   </script>
 </body>
