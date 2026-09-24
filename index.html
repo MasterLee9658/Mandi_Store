@@ -1,477 +1,722 @@
-import React, { useState, useMemo } from 'react';
-import {
-  Store,
-  Package,
-  ShoppingBag,
-  TrendingUp,
-  Receipt,
-  Search,
-  CheckCircle,
-  Clock,
-  ArrowUpRight,
-  ArrowDownRight,
-  Users,
-  FileSpreadsheet,
-  Tag,
-  Calendar,
-  ChevronDown,
-  ChevronRight,
-  Hourglass,
-  AlertCircle
-} from 'lucide-react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mandi Business Dashboard</title>
 
-// Raw Purchases Data from Mandi Purchase sheet
-const RAW_PURCHASES = [
-  { id: 1, sku: 'Onion', date: '8/18/2026', month: 'Aug_26', supplier: 'GOKUL TRADERS', qty: 14893, pp: 40.37, matValue: 601300, labour: 0, transport: 0, purValue: 601300, status: 'Paid', matSold: 'Yes', paidAmt: 601300, poId: '1477917', utr: '' },
-  { id: 2, sku: 'Onion', date: '8/24/2026', month: 'Aug_26', supplier: 'SMK TRADERS(Onion)', qty: 2291, pp: 44.20, matValue: 101270, labour: 0, transport: 0, purValue: 101270, status: 'Paid', matSold: 'Yes', paidAmt: 101270, poId: '1486072', utr: '' },
-  { id: 3, sku: 'Onion', date: '8/25/2026', month: 'Aug_26', supplier: 'SMK TRADERS(Onion)', qty: 107, pp: 50.15, matValue: 5366, labour: 0, transport: 0, purValue: 5366, status: 'Paid', matSold: 'Yes', paidAmt: 0, poId: '', utr: '' },
-  { id: 4, sku: 'Onion', date: '8/10/2026', month: 'Aug_26', supplier: 'SMK TRADERS(Onion)', qty: 4077, pp: 28.24, matValue: 115116, labour: 0, transport: 0, purValue: 115116, status: 'Paid', matSold: 'Yes', paidAmt: 0, poId: '', utr: '' },
-  { id: 5, sku: 'Onion', date: '8/17/2026', month: 'Aug_26', supplier: 'SMK TRADERS(Onion)', qty: 2398, pp: 28.23, matValue: 67684, labour: 0, transport: 0, purValue: 67684, status: 'Paid', matSold: 'Yes', paidAmt: 0, poId: '', utr: '' },
-  { id: 6, sku: 'Onion', date: '9/7/2026', month: 'Sep_26', supplier: 'GOKUL TRADERS', qty: 3555, pp: 52.00, matValue: 184860, labour: 1320, transport: 2474, purValue: 188654, status: 'Paid', matSold: 'Yes', paidAmt: 0, poId: '', utr: '' },
-  { id: 7, sku: 'Onion', date: '9/14/2026', month: 'Sep_26', supplier: 'Sahayadri', qty: 5700, pp: 48.00, matValue: 273600, labour: 0, transport: 20520, purValue: 294120, status: 'Pending', matSold: 'Yes', paidAmt: 0, poId: '', utr: '' },
-  { id: 8, sku: 'Onion', date: '9/17/2026', month: 'Sep_26', supplier: 'SMK TRADERS(Onion)', qty: 1925, pp: 48.00, matValue: 92400, labour: 372, transport: 0, purValue: 92772, status: 'Pending', matSold: 'Yes', paidAmt: 0, poId: '', utr: '' },
-  { id: 9, sku: 'Onion', date: '9/18/2026', month: 'Sep_26', supplier: 'smk TRADERS(Onion)', qty: 2617, pp: 50.00, matValue: 130850, labour: 510, transport: 0, purValue: 131360, status: 'Pending', matSold: 'Yes', paidAmt: 0, poId: '', utr: '' },
-  { id: 10, sku: 'Onion', date: '9/22/2026', month: 'Sep_26', supplier: 'Sahayadri', qty: 25880, pp: 0, matValue: 0, labour: 0, transport: 0, purValue: 0, status: 'Advance...', matSold: 'No', paidAmt: 0, poId: '', utr: '' }
-];
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-// Raw Sales Data from Mandi Sale sheet
-const RAW_SALES = [
-  { id: 1, sku: 'Onion', date: '8/18/2026', month: 'Aug_26', poId: '1477917', buyer: 'Elite Vegetable', qty: 5300, sp: 43.00, saleVal: 227900, mode: 'Contract', status: 'Collected' },
-  { id: 2, sku: 'Onion', date: '8/18/2026', month: 'Aug_26', poId: '', buyer: 'FRESHLEAVES FOOD PRIVATE LIMITED', qty: 9360, sp: 44.50, saleVal: 416520, mode: '', status: '' },
-  { id: 3, sku: 'Onion', date: '8/28/2026', month: 'Aug_26', poId: '', buyer: 'FRESHLEAVES FOOD PRIVATE LIMITED', qty: 2298, sp: 49.83, saleVal: 114500, mode: '', status: '' },
-  { id: 4, sku: 'Onion', date: '8/10/2026', month: 'Aug_26', poId: '', buyer: 'FRESHLEAVES FOOD PRIVATE LIMITED', qty: 4077, sp: 29.24, saleVal: 119193, mode: '', status: '' },
-  { id: 5, sku: 'Onion', date: '8/17/2026', month: 'Aug_26', poId: '', buyer: 'FRESHLEAVES FOOD PRIVATE LIMITED', qty: 2398, sp: 29.23, saleVal: 70082, mode: '', status: '' },
-  { id: 6, sku: 'Onion', date: '9/9/2026', month: 'Sep_26', poId: '', buyer: 'Ecom Chennai', qty: 3555, sp: 0, saleVal: 200520, mode: 'Contract', status: 'Collected' },
-  { id: 7, sku: 'Onion', date: '9/9/2026', month: 'Sep_26', poId: '', buyer: 'Ecom Chennai', qty: 3555, sp: 0, saleVal: 200520, mode: 'Contract', status: 'Collected' },
-  { id: 8, sku: 'Onion', date: '9/14/2026', month: 'Sep_26', poId: '', buyer: 'Elite Vegetable', qty: 5700, sp: 52.00, saleVal: 296400, mode: '', status: 'Pending' },
-  { id: 9, sku: 'Onion', date: '9/17/2026', month: 'Sep_26', poId: '', buyer: 'SS Fresh vegetables k-50', qty: 1925, sp: 51.00, saleVal: 98175, mode: '', status: 'Pending' },
-  { id: 10, sku: 'Onion', date: '9/18/2026', month: 'Sep_26', poId: '', buyer: 'Elite Vegetable', qty: 2617, sp: 51.50, saleVal: 134776, mode: '', status: 'Pending' }
-];
+  <!-- React 18 & ReactDOM UMD CDNs -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
 
-// Raw Expenses Data from Mandi Expense Base sheet
-const RAW_EXPENSES = [
-  { id: 1, date: '8/18/2026', month: 'Aug_26', type: '-logistics', val: 12000 },
-  { id: 2, date: '8/24/2026', month: 'Aug_26', type: '-Labour', val: 2300 }
-];
+  <!-- Babel Standalone CDN -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+  <div id="root"></div>
 
-const formatCurrency = (val) => {
-  if (val === undefined || val === null || isNaN(val)) return '₹0';
-  return '₹' + Number(val).toLocaleString('en-IN');
-};
+  <script type="text/babel">
+    const { useState, useMemo, useCallback } = React;
 
-const formatQty = (val) => {
-  if (val === undefined || val === null || isNaN(val)) return '0';
-  return Number(val).toLocaleString('en-IN');
-};
-
-// Helper to calculate days passed between purchase date and today (Sep 24, 2026)
-const calculateAgeingDays = (dateStr) => {
-  if (!dateStr) return 0;
-  const parts = dateStr.split('/');
-  if (parts.length !== 3) return 0;
-  const m = parseInt(parts[0], 10) - 1;
-  const d = parseInt(parts[1], 10);
-  const y = parseInt(parts[2], 10);
-  
-  const purchaseDate = new Date(y, m, d);
-  const todayDate = new Date(2026, 8, 24); // Today: 24th Sep 2026
-  
-  const diffTime = todayDate - purchaseDate;
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays >= 0 ? diffDays : 0;
-};
-
-export default function App() {
-  const [selectedMonth, setSelectedMonth] = useState('All');
-  const [selectedSku, setSelectedSku] = useState('All');
-  const [activeTab, setActiveTab] = useState('inventory'); // 'inventory', 'aging', 'buyers', 'expenses', 'ledger'
-  const [searchTerm, setSearchTerm] = useState('');
-  const [expandedRows, setExpandedRows] = useState([]);
-  const [onlyAvailableStock, setOnlyAvailableStock] = useState(false);
-
-  const toggleRowExpand = (id) => {
-    setExpandedRows(prev =>
-      prev.includes(id) ? prev.filter(rowId => rowId !== id) : [...prev, id]
+    const StoreIcon = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h18v2H3V3zm1 4h16l1 10H3L4 7zm3 10v4h10v-4" />
+      </svg>
     );
-  };
 
-  // Filtered Purchases
-  const filteredPurchases = useMemo(() => {
-    return RAW_PURCHASES.filter(item => {
-      const matchMonth = selectedMonth === 'All' || item.month === selectedMonth;
-      const matchSku = selectedSku === 'All' || item.sku.toLowerCase() === selectedSku.toLowerCase();
-      const matchSearch = searchTerm === '' || 
-        item.supplier.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (item.poId && item.poId.includes(searchTerm));
-      return matchMonth && matchSku && matchSearch;
-    });
-  }, [selectedMonth, selectedSku, searchTerm]);
+    const PackageIcon = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+      </svg>
+    );
 
-  // Filtered Sales
-  const filteredSales = useMemo(() => {
-    return RAW_SALES.filter(item => {
-      const matchMonth = selectedMonth === 'All' || item.month === selectedMonth;
-      const matchSku = selectedSku === 'All' || item.sku.toLowerCase() === selectedSku.toLowerCase();
-      const matchSearch = searchTerm === '' || 
-        item.buyer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (item.poId && item.poId.includes(searchTerm));
-      return matchMonth && matchSku && matchSearch;
-    });
-  }, [selectedMonth, selectedSku, searchTerm]);
+    const ShoppingBagIcon = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+      </svg>
+    );
 
-  // Filtered Expenses
-  const filteredExpenses = useMemo(() => {
-    return RAW_EXPENSES.filter(item => {
-      const matchMonth = selectedMonth === 'All' || item.month === selectedMonth;
-      const matchSearch = searchTerm === '' || item.type.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchMonth && matchSearch;
-    });
-  }, [selectedMonth, searchTerm]);
+    const TrendingUpIcon = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+      </svg>
+    );
 
-  const supplierInventory = useMemo(() => {
-    return filteredPurchases.map(pur => {
-      let matchedSales = [];
+    const ReceiptIcon = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 14l2 2 4-4m-6 8h10a2 2 0 002-2V4a2 2 0 00-2-2H6a2 2 0 00-2 2v16l3-2 3 2 3-2 3 2 3-2" />
+      </svg>
+    );
+
+    const SearchIcon = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+    );
+
+    const CheckCircleIcon = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    );
+
+    const ClockIcon = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    );
+
+    const ArrowUpRightIcon = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M17 7H7m10 0v10" />
+      </svg>
+    );
+
+    const ArrowDownRightIcon = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M17 17L7 7M17 7H7m10 0v-10" />
+      </svg>
+    );
+
+    const UsersIcon = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5 5 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+      </svg>
+    );
+
+    const FileSpreadsheetIcon = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+    );
+
+    const TagIcon = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5a1 1 0 01.707.293l7 7a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A1 1 0 013 12V7a4 4 0 014-4z" />
+      </svg>
+    );
+
+    const CalendarIcon = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+    );
+
+    const ChevronDownIcon = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+      </svg>
+    );
+
+    const ChevronRightIcon = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+      </svg>
+    );
+
+    const HourglassIcon = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    );
+
+    const RAW_PURCHASES = [
+      { id: 1, sku: 'Onion', date: '8/18/2026', month: 'Aug_26', supplier: 'GOKUL TRADERS', qty: 14893, pp: 40.37, matValue: 601300, labour: 0, transport: 0, purValue: 601300, status: 'Paid', matSold: 'Yes', paidAmt: 601300, poId: '1477917', utr: '' },
+      { id: 2, sku: 'Onion', date: '8/24/2026', month: 'Aug_26', supplier: 'SMK TRADERS(Onion)', qty: 2291, pp: 44.20, matValue: 101270, labour: 0, transport: 0, purValue: 101270, status: 'Paid', matSold: 'Yes', paidAmt: 101270, poId: '1486072', utr: '' },
+      { id: 3, sku: 'Onion', date: '8/25/2026', month: 'Aug_26', supplier: 'SMK TRADERS(Onion)', qty: 107, pp: 50.15, matValue: 5366, labour: 0, transport: 0, purValue: 5366, status: 'Paid', matSold: 'Yes', paidAmt: 0, poId: '', utr: '' },
+      { id: 4, sku: 'Onion', date: '8/10/2026', month: 'Aug_26', supplier: 'SMK TRADERS(Onion)', qty: 4077, pp: 28.24, matValue: 115116, labour: 0, transport: 0, purValue: 115116, status: 'Paid', matSold: 'Yes', paidAmt: 0, poId: '', utr: '' },
+      { id: 5, sku: 'Onion', date: '8/17/2026', month: 'Aug_26', supplier: 'SMK TRADERS(Onion)', qty: 2398, pp: 28.23, matValue: 67684, labour: 0, transport: 0, purValue: 67684, status: 'Paid', matSold: 'Yes', paidAmt: 0, poId: '', utr: '' },
+      { id: 6, sku: 'Onion', date: '9/7/2026', month: 'Sep_26', supplier: 'GOKUL TRADERS', qty: 3555, pp: 52.00, matValue: 184860, labour: 1320, transport: 2474, purValue: 188654, status: 'Paid', matSold: 'Yes', paidAmt: 0, poId: '', utr: '' },
+      { id: 7, sku: 'Onion', date: '9/14/2026', month: 'Sep_26', supplier: 'Sahayadri', qty: 5700, pp: 48.00, matValue: 273600, labour: 0, transport: 20520, purValue: 294120, status: 'Pending', matSold: 'Yes', paidAmt: 0, poId: '', utr: '' },
+      { id: 8, sku: 'Onion', date: '9/17/2026', month: 'Sep_26', supplier: 'SMK TRADERS(Onion)', qty: 1925, pp: 48.00, matValue: 92400, labour: 372, transport: 0, purValue: 92772, status: 'Pending', matSold: 'Yes', paidAmt: 0, poId: '', utr: '' },
+      { id: 9, sku: 'Onion', date: '9/18/2026', month: 'Sep_26', supplier: 'smk TRADERS(Onion)', qty: 2617, pp: 50.00, matValue: 130850, labour: 510, transport: 0, purValue: 131360, status: 'Pending', matSold: 'Yes', paidAmt: 0, poId: '', utr: '' },
+      { id: 10, sku: 'Onion', date: '9/22/2026', month: 'Sep_26', supplier: 'Sahayadri', qty: 25880, pp: 0, matValue: 0, labour: 0, transport: 0, purValue: 0, status: 'Advance...', matSold: 'No', paidAmt: 0, poId: '', utr: '' }
+    ];
+
+    const RAW_SALES = [
+      { id: 1, sku: 'Onion', date: '8/18/2026', month: 'Aug_26', poId: '1477917', buyer: 'Elite Vegetable', qty: 5300, sp: 43.00, saleVal: 227900, mode: 'Contract', status: 'Collected' },
+      { id: 2, sku: 'Onion', date: '8/18/2026', month: 'Aug_26', poId: '', buyer: 'FRESHLEAVES FOOD PRIVATE LIMITED', qty: 9360, sp: 44.50, saleVal: 416520, mode: '', status: '' },
+      { id: 3, sku: 'Onion', date: '8/28/2026', month: 'Aug_26', poId: '', buyer: 'FRESHLEAVES FOOD PRIVATE LIMITED', qty: 2298, sp: 49.83, saleVal: 114500, mode: '', status: '' },
+      { id: 4, sku: 'Onion', date: '8/10/2026', month: 'Aug_26', poId: '', buyer: 'FRESHLEAVES FOOD PRIVATE LIMITED', qty: 4077, sp: 29.24, saleVal: 119193, mode: '', status: '' },
+      { id: 5, sku: 'Onion', date: '8/17/2026', month: 'Aug_26', poId: '', buyer: 'FRESHLEAVES FOOD PRIVATE LIMITED', qty: 2398, sp: 29.23, saleVal: 70082, mode: '', status: '' },
+      { id: 6, sku: 'Onion', date: '9/9/2026', month: 'Sep_26', poId: '', buyer: 'Ecom Chennai', qty: 3555, sp: 0, saleVal: 200520, mode: 'Contract', status: 'Collected' },
+      { id: 7, sku: 'Onion', date: '9/9/2026', month: 'Sep_26', poId: '', buyer: 'Ecom Chennai', qty: 3555, sp: 0, saleVal: 200520, mode: 'Contract', status: 'Collected' },
+      { id: 8, sku: 'Onion', date: '9/14/2026', month: 'Sep_26', poId: '', buyer: 'Elite Vegetable', qty: 5700, sp: 52.00, saleVal: 296400, mode: '', status: 'Pending' },
+      { id: 9, sku: 'Onion', date: '9/17/2026', month: 'Sep_26', poId: '', buyer: 'SS Fresh vegetables k-50', qty: 1925, sp: 51.00, saleVal: 98175, mode: '', status: 'Pending' },
+      { id: 10, sku: 'Onion', date: '9/18/2026', month: 'Sep_26', poId: '', buyer: 'Elite Vegetable', qty: 2617, sp: 51.50, saleVal: 134776, mode: '', status: 'Pending' }
+    ];
+
+    const RAW_EXPENSES = [
+      { id: 1, date: '8/18/2026', month: 'Aug_26', type: '-logistics', val: 12000 },
+      { id: 2, date: '8/24/2026', month: 'Aug_26', type: '-Labour', val: 2300 }
+    ];
+
+    const formatCurrency = (val) => {
+      if (val === undefined || val === null || isNaN(val)) return '₹0';
+      return '₹' + Number(val).toLocaleString('en-IN');
+    };
+
+    const formatQty = (val) => {
+      if (val === undefined || val === null || isNaN(val)) return '0';
+      return Number(val).toLocaleString('en-IN');
+    };
+
+    const calculateAgeingDays = (dateStr) => {
+      if (!dateStr) return 0;
+      const parts = dateStr.split('/');
+      if (parts.length !== 3) return 0;
+      const m = parseInt(parts[0], 10) - 1;
+      const d = parseInt(parts[1], 10);
+      const y = parseInt(parts[2], 10);
       
-      // If PO ID exists, match by exact PO ID
-      if (pur.poId && pur.poId.trim() !== '') {
-        matchedSales = RAW_SALES.filter(s => s.poId && s.poId.trim() === pur.poId.trim());
-      } else {
-        // Fallback match by exact Date and SKU if PO ID is empty
-        matchedSales = RAW_SALES.filter(s => s.date === pur.date && s.sku === pur.sku && (!s.poId || s.poId.trim() === ''));
-      }
-
-      const totalSoldQty = matchedSales.reduce((sum, s) => sum + Number(s.qty || 0), 0);
-      const totalSaleVal = matchedSales.reduce((sum, s) => sum + Number(s.saleVal || 0), 0);
+      const purchaseDate = new Date(y, m, d);
+      const todayDate = new Date(2026, 8, 24);
       
-      // Available inventory remaining for this batch
-      const availStock = Math.max(0, Number(pur.qty || 0) - totalSoldQty);
+      const diffTime = todayDate - purchaseDate;
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays >= 0 ? diffDays : 0;
+    };
 
-      // Ageing calculation in days
-      const ageingDays = calculateAgeingDays(pur.date);
+    function App() {
+      const [selectedMonth, setSelectedMonth] = useState('All');
+      const [selectedSku, setSelectedSku] = useState('All');
+      const [activeTab, setActiveTab] = useState('inventory');
+      const [searchTerm, setSearchTerm] = useState('');
+      const [expandedRows, setExpandedRows] = useState([]);
+      const [onlyAvailableStock, setOnlyAvailableStock] = useState(false);
 
-      // Proportionate Cost of Goods Sold for margin calculation
-      const cogs = Number(pur.qty) > 0 ? (pur.purValue / pur.qty) * totalSoldQty : 0;
-      const marginVal = totalSaleVal - cogs;
-      const marginPct = totalSaleVal > 0 ? ((marginVal / totalSaleVal) * 100).toFixed(2) : '0.00';
-
-      return {
-        ...pur,
-        soldQty: totalSoldQty,
-        availStock: availStock,
-        ageingDays: ageingDays,
-        saleValue: totalSaleVal,
-        margin: marginVal,
-        marginPct: marginPct,
-        matchedSales: matchedSales
+      const toggleRowExpand = (id) => {
+        setExpandedRows(prev =>
+          prev.includes(id) ? prev.filter(rowId => rowId !== id) : [...prev, id]
+        );
       };
-    });
-  }, [filteredPurchases]);
 
-  // Aggregated Summary Numbers
-  const totalPurchasedQty = useMemo(() => filteredPurchases.reduce((sum, p) => sum + Number(p.qty || 0), 0), [filteredPurchases]);
-  const totalSoldQty = useMemo(() => filteredSales.reduce((sum, s) => sum + Number(s.qty || 0), 0), [filteredSales]);
-  const totalAvailStock = useMemo(() => supplierInventory.reduce((sum, i) => sum + Number(i.availStock || 0), 0), [supplierInventory]);
-  const totalPurchaseValue = useMemo(() => filteredPurchases.reduce((sum, p) => sum + Number(p.purValue || 0), 0), [filteredPurchases]);
-  const totalSaleValue = useMemo(() => filteredSales.reduce((sum, s) => sum + Number(s.saleVal || 0), 0), [filteredSales]);
-  
-  const totalTradeMargin = useMemo(() => {
-    return supplierInventory.reduce((sum, i) => sum + Number(i.margin || 0), 0);
-  }, [supplierInventory]);
+      const filteredPurchases = useMemo(() => {
+        return RAW_PURCHASES.filter(item => {
+          const matchMonth = selectedMonth === 'All' || item.month === selectedMonth;
+          const matchSku = selectedSku === 'All' || item.sku.toLowerCase() === selectedSku.toLowerCase();
+          const matchSearch = searchTerm === '' || 
+            item.supplier.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (item.poId && item.poId.includes(searchTerm));
+          return matchMonth && matchSku && matchSearch;
+        });
+      }, [selectedMonth, selectedSku, searchTerm]);
 
-  const overallMarginPct = useMemo(() => {
-    if (totalSaleValue === 0) return '0.00';
-    return ((totalTradeMargin / totalSaleValue) * 100).toFixed(2);
-  }, [totalTradeMargin, totalSaleValue]);
+      const filteredSales = useMemo(() => {
+        return RAW_SALES.filter(item => {
+          const matchMonth = selectedMonth === 'All' || item.month === selectedMonth;
+          const matchSku = selectedSku === 'All' || item.sku.toLowerCase() === selectedSku.toLowerCase();
+          const matchSearch = searchTerm === '' || 
+            item.buyer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (item.poId && item.poId.includes(searchTerm));
+          return matchMonth && matchSku && matchSearch;
+        });
+      }, [selectedMonth, selectedSku, searchTerm]);
 
-  const totalExpensesVal = useMemo(() => filteredExpenses.reduce((sum, e) => sum + Number(e.val || 0), 0), [filteredExpenses]);
+      const filteredExpenses = useMemo(() => {
+        return RAW_EXPENSES.filter(item => {
+          const matchMonth = selectedMonth === 'All' || item.month === selectedMonth;
+          const matchSearch = searchTerm === '' || item.type.toLowerCase().includes(searchTerm.toLowerCase());
+          return matchMonth && matchSearch;
+        });
+      }, [selectedMonth, searchTerm]);
 
-  // Stock ageing list for ageing tab
-  const ageingList = useMemo(() => {
-    if (onlyAvailableStock) {
-      return supplierInventory.filter(i => i.availStock > 0);
-    }
-    return supplierInventory;
-  }, [supplierInventory, onlyAvailableStock]);
+      const supplierInventory = useMemo(() => {
+        return filteredPurchases.map(pur => {
+          let matchedSales = [];
+          
+          if (pur.poId && pur.poId.trim() !== '') {
+            matchedSales = RAW_SALES.filter(s => s.poId && s.poId.trim() === pur.poId.trim());
+          } else {
+            matchedSales = RAW_SALES.filter(s => s.date === pur.date && s.sku === pur.sku && (!s.poId || s.poId.trim() === ''));
+          }
 
-  return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans p-3 sm:p-6 lg:p-8">
-      <div className="max-w-7xl mx-auto space-y-6">
+          const totalSoldQty = matchedSales.reduce((sum, s) => sum + Number(s.qty || 0), 0);
+          const totalSaleVal = matchedSales.reduce((sum, s) => sum + Number(s.saleVal || 0), 0);
+          const availStock = Math.max(0, Number(pur.qty || 0) - totalSoldQty);
+          const ageingDays = calculateAgeingDays(pur.date);
 
-        {/* Dashboard Light Header */}
-        <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-slate-200 bg-white p-5 rounded-2xl shadow-sm">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider flex items-center gap-1">
-                <Store className="w-3.5 h-3.5" /> Mandi Business Store
-              </span>
-              <span className="bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-0.5 rounded-full text-xs font-semibold">
-                Today: 24th Sep 2026
-              </span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-bold mt-1 text-slate-900 tracking-tight">
-              Mandi Business Dashboard
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-              Available Inventory, Stock Ageing, Sales Value, Trade Margins & Expenses
-            </p>
-          </div>
+          const cogs = Number(pur.qty) > 0 ? (pur.purValue / pur.qty) * totalSoldQty : 0;
+          const marginVal = totalSaleVal - cogs;
+          const marginPct = totalSaleVal > 0 ? ((marginVal / totalSaleVal) * 100).toFixed(2) : '0.00';
 
-          {/* Top Filter Controls */}
-          <div className="flex flex-wrap items-center gap-2.5">
-            {/* Month Filter */}
-            <div className="flex items-center gap-1.5 bg-slate-100 border border-slate-200 px-3 py-2 rounded-xl">
-              <Calendar className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span className="text-xs text-slate-500 font-medium">Month:</span>
-              <select
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
-                className="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer"
-              >
-                <option value="All">All Months</option>
-                <option value="Aug_26">Aug_26</option>
-                <option value="Sep_26">Sep_26</option>
-              </select>
-            </div>
+          return {
+            ...pur,
+            soldQty: totalSoldQty,
+            availStock: availStock,
+            ageingDays: ageingDays,
+            saleValue: totalSaleVal,
+            margin: marginVal,
+            marginPct: marginPct,
+            matchedSales: matchedSales
+          };
+        });
+      }, [filteredPurchases]);
 
-            {/* SKU Filter */}
-            <div className="flex items-center gap-1.5 bg-slate-100 border border-slate-200 px-3 py-2 rounded-xl">
-              <Tag className="w-4 h-4 text-amber-600 shrink-0" />
-              <span className="text-xs text-slate-500 font-medium">SKU:</span>
-              <select
-                value={selectedSku}
-                onChange={(e) => setSelectedSku(e.target.value)}
-                className="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer"
-              >
-                <option value="All">All SKUs</option>
-                <option value="Onion">Onion</option>
-                <option value="Garlic">Garlic</option>
-              </select>
-            </div>
+      const totalPurchasedQty = useMemo(() => filteredPurchases.reduce((sum, p) => sum + Number(p.qty || 0), 0), [filteredPurchases]);
+      const totalSoldQty = useMemo(() => filteredSales.reduce((sum, s) => sum + Number(s.qty || 0), 0), [filteredSales]);
+      const totalAvailStock = useMemo(() => supplierInventory.reduce((sum, i) => sum + Number(i.availStock || 0), 0), [supplierInventory]);
+      const totalPurchaseValue = useMemo(() => filteredPurchases.reduce((sum, p) => sum + Number(p.purValue || 0), 0), [filteredPurchases]);
+      const totalSaleValue = useMemo(() => filteredSales.reduce((sum, s) => sum + Number(s.saleVal || 0), 0), [filteredSales]);
+      
+      const totalTradeMargin = useMemo(() => {
+        return supplierInventory.reduce((sum, i) => sum + Number(i.margin || 0), 0);
+      }, [supplierInventory]);
 
-            {/* Search Input */}
-            <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
-              <input
-                type="text"
-                placeholder="Search supplier, buyer, PO..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-slate-100 border border-slate-200 text-xs text-slate-800 rounded-xl pl-9 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 w-40 sm:w-52 font-medium"
-              />
-            </div>
-          </div>
-        </header>
+      const overallMarginPct = useMemo(() => {
+        if (totalSaleValue === 0) return '0.00';
+        return ((totalTradeMargin / totalSaleValue) * 100).toFixed(2);
+      }, [totalTradeMargin, totalSaleValue]);
 
-        {/* Top Light Stat Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {/* Card 1: Available Stock */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between text-slate-500 text-[11px] font-semibold uppercase tracking-wider">
-              <span>Available Stock</span>
-              <Package className="w-4 h-4 text-emerald-600" />
-            </div>
-            <p className="text-xl sm:text-2xl font-bold text-slate-900 mt-1 font-mono">
-              {formatQty(totalAvailStock)} <span className="text-xs font-normal text-slate-500">Kg</span>
-            </p>
-            <p className="text-[11px] text-slate-500 mt-1">Purchased: {formatQty(totalPurchasedQty)}</p>
-          </div>
+      const totalExpensesVal = useMemo(() => filteredExpenses.reduce((sum, e) => sum + Number(e.val || 0), 0), [filteredExpenses]);
 
-          {/* Card 2: Sold Stock */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between text-slate-500 text-[11px] font-semibold uppercase tracking-wider">
-              <span>Sold Stock</span>
-              <ShoppingBag className="w-4 h-4 text-blue-600" />
-            </div>
-            <p className="text-xl sm:text-2xl font-bold text-blue-600 mt-1 font-mono">
-              {formatQty(totalSoldQty)} <span className="text-xs font-normal text-slate-500">Kg</span>
-            </p>
-            <p className="text-[11px] text-slate-500 mt-1">Total Sold Quantity</p>
-          </div>
+      const ageingList = useMemo(() => {
+        if (onlyAvailableStock) {
+          return supplierInventory.filter(i => i.availStock > 0);
+        }
+        return supplierInventory;
+      }, [supplierInventory, onlyAvailableStock]);
 
-          {/* Card 3: Total Sale Value */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between text-slate-500 text-[11px] font-semibold uppercase tracking-wider">
-              <span>Sale Value</span>
-              <ArrowUpRight className="w-4 h-4 text-emerald-600" />
-            </div>
-            <p className="text-lg sm:text-xl font-bold text-emerald-600 mt-1 font-mono">
-              {formatCurrency(totalSaleValue)}
-            </p>
-            <p className="text-[11px] text-slate-500 mt-1">Gross Sales Revenue</p>
-          </div>
+      return (
+        <div className="min-h-screen bg-slate-50 text-slate-800 font-sans p-3 sm:p-6 lg:p-8">
+          <div className="max-w-7xl mx-auto space-y-6">
 
-          {/* Card 4: Trade Margin */}
-          <div className="bg-emerald-50/50 border border-emerald-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between text-emerald-800 text-[11px] font-semibold uppercase tracking-wider">
-              <span>Trade Margin</span>
-              <TrendingUp className="w-4 h-4 text-emerald-600" />
-            </div>
-            <p className="text-lg sm:text-xl font-bold text-emerald-700 mt-1 font-mono">
-              {formatCurrency(totalTradeMargin)}
-            </p>
-            <p className="text-[11px] text-emerald-800 font-bold mt-1">
-              Margin: {overallMarginPct}%
-            </p>
-          </div>
-
-          {/* Card 5: Total Expenses */}
-          <div className="bg-rose-50/50 border border-rose-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between text-rose-800 text-[11px] font-semibold uppercase tracking-wider">
-              <span>Total Expenses</span>
-              <Receipt className="w-4 h-4 text-rose-600" />
-            </div>
-            <p className="text-lg sm:text-xl font-bold text-rose-700 mt-1 font-mono">
-              {formatCurrency(totalExpensesVal)}
-            </p>
-            <p className="text-[11px] text-rose-800 font-medium mt-1">{selectedMonth} Expenses</p>
-          </div>
-
-          {/* Card 6: Total Purchase Cost */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between text-slate-500 text-[11px] font-semibold uppercase tracking-wider">
-              <span>Purchase Cost</span>
-              <ArrowDownRight className="w-4 h-4 text-amber-600" />
-            </div>
-            <p className="text-lg sm:text-xl font-bold text-amber-600 mt-1 font-mono">
-              {formatCurrency(totalPurchaseValue)}
-            </p>
-            <p className="text-[11px] text-slate-500 mt-1">Total Procurement</p>
-          </div>
-        </div>
-
-        {/* Navigation Tabs */}
-        <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto">
-          <button
-            onClick={() => setActiveTab('inventory')}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 ${
-              activeTab === 'inventory'
-                ? 'bg-slate-900 text-white shadow-sm'
-                : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
-            }`}
-          >
-            <Package className="w-4 h-4" /> Available Inventory & Margin Analysis
-          </button>
-
-          <button
-            onClick={() => setActiveTab('aging')}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 ${
-              activeTab === 'aging'
-                ? 'bg-slate-900 text-white shadow-sm'
-                : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
-            }`}
-          >
-            <Hourglass className="w-4 h-4 text-amber-400" /> Stock Ageing Analysis
-          </button>
-
-          <button
-            onClick={() => setActiveTab('buyers')}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 ${
-              activeTab === 'buyers'
-                ? 'bg-slate-900 text-white shadow-sm'
-                : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
-            }`}
-          >
-            <Users className="w-4 h-4" /> Buyer Sales Ledger
-          </button>
-
-          <button
-            onClick={() => setActiveTab('expenses')}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 ${
-              activeTab === 'expenses'
-                ? 'bg-slate-900 text-white shadow-sm'
-                : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
-            }`}
-          >
-            <Receipt className="w-4 h-4" /> Monthly Expenses Detail
-          </button>
-
-          <button
-            onClick={() => setActiveTab('ledger')}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 ${
-              activeTab === 'ledger'
-                ? 'bg-slate-900 text-white shadow-sm'
-                : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
-            }`}
-          >
-            <FileSpreadsheet className="w-4 h-4" /> Overall Ledger
-          </button>
-        </div>
-
-        {/* TAB 1: Available Inventory & Margin Analysis */}
-        {activeTab === 'inventory' && (
-          <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 space-y-4 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-200">
+            <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-slate-200 bg-white p-5 rounded-2xl shadow-sm">
               <div>
-                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <Package className="w-4 h-4 text-emerald-600" />
-                  Available Inventory & Margin Analysis (Supplier-Wise & PO ID-Wise)
-                </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Tracks batch stock balances and trade profit margins per supplier & PO ID
+                <div className="flex items-center gap-2">
+                  <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider flex items-center gap-1">
+                    <StoreIcon className="w-3.5 h-3.5" /> Mandi Business Store
+                  </span>
+                  <span className="bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-0.5 rounded-full text-xs font-semibold">
+                    Today: 24th Sep 2026
+                  </span>
+                </div>
+                <h1 className="text-2xl sm:text-3xl font-bold mt-1 text-slate-900 tracking-tight">
+                  Mandi Business Dashboard
+                </h1>
+                <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                  Available Inventory, Stock Ageing, Sales Value, Trade Margins & Expenses
                 </p>
               </div>
-              <span className="text-xs text-slate-600 bg-slate-100 border border-slate-200 px-3 py-1 rounded-lg font-medium">
-                Showing {supplierInventory.length} Supplier Batches
-              </span>
+
+              <div className="flex flex-wrap items-center gap-2.5">
+                <div className="flex items-center gap-1.5 bg-slate-100 border border-slate-200 px-3 py-2 rounded-xl">
+                  <CalendarIcon className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span className="text-xs text-slate-500 font-medium">Month:</span>
+                  <select
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
+                    className="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer"
+                  >
+                    <option value="All">All Months</option>
+                    <option value="Aug_26">Aug_26</option>
+                    <option value="Sep_26">Sep_26</option>
+                  </select>
+                </div>
+
+                <div className="flex items-center gap-1.5 bg-slate-100 border border-slate-200 px-3 py-2 rounded-xl">
+                  <TagIcon className="w-4 h-4 text-amber-600 shrink-0" />
+                  <span className="text-xs text-slate-500 font-medium">SKU:</span>
+                  <select
+                    value={selectedSku}
+                    onChange={(e) => setSelectedSku(e.target.value)}
+                    className="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer"
+                  >
+                    <option value="All">All SKUs</option>
+                    <option value="Onion">Onion</option>
+                    <option value="Garlic">Garlic</option>
+                  </select>
+                </div>
+
+                <div className="relative">
+                  <SearchIcon className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                  <input
+                    type="text"
+                    placeholder="Search supplier, buyer, PO..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="bg-slate-100 border border-slate-200 text-xs text-slate-800 rounded-xl pl-9 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 w-40 sm:w-52 font-medium"
+                  />
+                </div>
+              </div>
+            </header>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between text-slate-500 text-[11px] font-semibold uppercase tracking-wider">
+                  <span>Available Stock</span>
+                  <PackageIcon className="w-4 h-4 text-emerald-600" />
+                </div>
+                <p className="text-xl sm:text-2xl font-bold text-slate-900 mt-1 font-mono">
+                  {formatQty(totalAvailStock)} <span className="text-xs font-normal text-slate-500">Kg</span>
+                </p>
+                <p className="text-[11px] text-slate-500 mt-1">Purchased: {formatQty(totalPurchasedQty)}</p>
+              </div>
+
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between text-slate-500 text-[11px] font-semibold uppercase tracking-wider">
+                  <span>Sold Stock</span>
+                  <ShoppingBagIcon className="w-4 h-4 text-blue-600" />
+                </div>
+                <p className="text-xl sm:text-2xl font-bold text-blue-600 mt-1 font-mono">
+                  {formatQty(totalSoldQty)} <span className="text-xs font-normal text-slate-500">Kg</span>
+                </p>
+                <p className="text-[11px] text-slate-500 mt-1">Total Sold Quantity</p>
+              </div>
+
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between text-slate-500 text-[11px] font-semibold uppercase tracking-wider">
+                  <span>Sale Value</span>
+                  <ArrowUpRightIcon className="w-4 h-4 text-emerald-600" />
+                </div>
+                <p className="text-lg sm:text-xl font-bold text-emerald-600 mt-1 font-mono">
+                  {formatCurrency(totalSaleValue)}
+                </p>
+                <p className="text-[11px] text-slate-500 mt-1">Gross Sales Revenue</p>
+              </div>
+
+              <div className="bg-emerald-50/50 border border-emerald-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between text-emerald-800 text-[11px] font-semibold uppercase tracking-wider">
+                  <span>Trade Margin</span>
+                  <TrendingUpIcon className="w-4 h-4 text-emerald-600" />
+                </div>
+                <p className="text-lg sm:text-xl font-bold text-emerald-700 mt-1 font-mono">
+                  {formatCurrency(totalTradeMargin)}
+                </p>
+                <p className="text-[11px] text-emerald-800 font-bold mt-1">
+                  Margin: {overallMarginPct}%
+                </p>
+              </div>
+
+              <div className="bg-rose-50/50 border border-rose-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between text-rose-800 text-[11px] font-semibold uppercase tracking-wider">
+                  <span>Total Expenses</span>
+                  <ReceiptIcon className="w-4 h-4 text-rose-600" />
+                </div>
+                <p className="text-lg sm:text-xl font-bold text-rose-700 mt-1 font-mono">
+                  {formatCurrency(totalExpensesVal)}
+                </p>
+                <p className="text-[11px] text-rose-800 font-medium mt-1">{selectedMonth} Expenses</p>
+              </div>
+
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between text-slate-500 text-[11px] font-semibold uppercase tracking-wider">
+                  <span>Purchase Cost</span>
+                  <ArrowDownRightIcon className="w-4 h-4 text-amber-600" />
+                </div>
+                <p className="text-lg sm:text-xl font-bold text-amber-600 mt-1 font-mono">
+                  {formatCurrency(totalPurchaseValue)}
+                </p>
+                <p className="text-[11px] text-slate-500 mt-1">Total Procurement</p>
+              </div>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs sm:text-sm text-slate-700">
-                <thead className="bg-slate-100 text-slate-600 text-[11px] uppercase font-mono font-bold">
-                  <tr>
-                    <th className="py-3 px-3 rounded-l-xl">SKU</th>
-                    <th className="py-3 px-3">Date</th>
-                    <th className="py-3 px-3">Supplier Name</th>
-                    <th className="py-3 px-3">PO ID</th>
-                    <th className="py-3 px-3 text-right">Purchased Qty</th>
-                    <th className="py-3 px-3 text-right">Sold Stock</th>
-                    <th className="py-3 px-3 text-right">Available Inventory</th>
-                    <th className="py-3 px-3 text-right">Purchase Value</th>
-                    <th className="py-3 px-3 text-right">Sale Value</th>
-                    <th className="py-3 px-3 text-right">Margin (₹)</th>
-                    <th className="py-3 px-3 text-right rounded-r-xl">Margin %</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {supplierInventory.length === 0 ? (
-                    <tr>
-                      <td colSpan="11" className="text-center py-8 text-slate-400">
-                        No purchase records found matching selected filters.
-                      </td>
-                    </tr>
-                  ) : (
-                    supplierInventory.map((row) => (
-                      <React.Fragment key={row.id}>
-                        <tr 
-                          onClick={() => toggleRowExpand(row.id)}
-                          className={`hover:bg-slate-50 transition-colors cursor-pointer ${
-                            expandedRows.includes(row.id) ? 'bg-emerald-50/40' : ''
-                          }`}
-                        >
-                          <td className="py-3 px-3 font-bold text-amber-700">{row.sku}</td>
-                          <td className="py-3 px-3 font-mono text-slate-600">{row.date}</td>
-                          <td className="py-3 px-3 font-semibold text-slate-900">
-                            <div className="flex items-center gap-1.5">
-                              {row.matchedSales.length > 0 ? (
-                                expandedRows.includes(row.id) ? (
-                                  <ChevronDown className="w-4 h-4 text-emerald-600 shrink-0" />
+            <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto">
+              <button
+                onClick={() => setActiveTab('inventory')}
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 ${
+                  activeTab === 'inventory'
+                    ? 'bg-slate-900 text-white shadow-sm'
+                    : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                }`}
+              >
+                <PackageIcon className="w-4 h-4" /> Available Inventory & Margin Analysis
+              </button>
+
+              <button
+                onClick={() => setActiveTab('aging')}
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 ${
+                  activeTab === 'aging'
+                    ? 'bg-slate-900 text-white shadow-sm'
+                    : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                }`}
+              >
+                <HourglassIcon className="w-4 h-4 text-amber-400" /> Stock Ageing Analysis
+              </button>
+
+              <button
+                onClick={() => setActiveTab('buyers')}
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 ${
+                  activeTab === 'buyers'
+                    ? 'bg-slate-900 text-white shadow-sm'
+                    : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                }`}
+              >
+                <UsersIcon className="w-4 h-4" /> Buyer Sales Ledger
+              </button>
+
+              <button
+                onClick={() => setActiveTab('expenses')}
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 ${
+                  activeTab === 'expenses'
+                    ? 'bg-slate-900 text-white shadow-sm'
+                    : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                }`}
+              >
+                <ReceiptIcon className="w-4 h-4" /> Monthly Expenses Detail
+              </button>
+
+              <button
+                onClick={() => setActiveTab('ledger')}
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 ${
+                  activeTab === 'ledger'
+                    ? 'bg-slate-900 text-white shadow-sm'
+                    : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                }`}
+              >
+                <FileSpreadsheetIcon className="w-4 h-4" /> Overall Ledger
+              </button>
+            </div>
+
+            {activeTab === 'inventory' && (
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 space-y-4 shadow-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-200">
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                      <PackageIcon className="w-4 h-4 text-emerald-600" />
+                      Available Inventory & Margin Analysis (Supplier-Wise & PO ID-Wise)
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Click any supplier row to reveal buyer details linked by PO ID
+                    </p>
+                  </div>
+                  <span className="text-xs text-slate-600 bg-slate-100 border border-slate-200 px-3 py-1 rounded-lg font-medium">
+                    {supplierInventory.length} Supplier Batches
+                  </span>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs sm:text-sm text-slate-700">
+                    <thead className="bg-slate-100 text-slate-600 text-[11px] uppercase font-mono font-bold">
+                      <tr>
+                        <th className="py-3 px-3 rounded-l-xl">SKU</th>
+                        <th className="py-3 px-3">Date</th>
+                        <th className="py-3 px-3">Supplier Name</th>
+                        <th className="py-3 px-3">PO ID</th>
+                        <th className="py-3 px-3 text-right">Purchased Qty</th>
+                        <th className="py-3 px-3 text-right">Sold Stock</th>
+                        <th className="py-3 px-3 text-right">Available Inventory</th>
+                        <th className="py-3 px-3 text-right">Purchase Value</th>
+                        <th className="py-3 px-3 text-right">Sale Value</th>
+                        <th className="py-3 px-3 text-right">Margin (₹)</th>
+                        <th className="py-3 px-3 text-right rounded-r-xl">Margin %</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {supplierInventory.map((row) => (
+                        <React.Fragment key={row.id}>
+                          <tr 
+                            onClick={() => toggleRowExpand(row.id)}
+                            className={`hover:bg-slate-50 transition-colors cursor-pointer ${
+                              expandedRows.includes(row.id) ? 'bg-emerald-50/40' : ''
+                            }`}
+                          >
+                            <td className="py-3 px-3 font-bold text-amber-700">{row.sku}</td>
+                            <td className="py-3 px-3 font-mono text-slate-600">{row.date}</td>
+                            <td className="py-3 px-3 font-semibold text-slate-900">
+                              <div className="flex items-center gap-1.5">
+                                {row.matchedSales.length > 0 ? (
+                                  expandedRows.includes(row.id) ? (
+                                    <ChevronDownIcon className="w-4 h-4 text-emerald-600 shrink-0" />
+                                  ) : (
+                                    <ChevronRightIcon className="w-4 h-4 text-slate-400 shrink-0" />
+                                  )
                                 ) : (
-                                  <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
-                                )
-                              ) : (
-                                <span className="w-4 h-4 shrink-0 inline-block" />
-                              )}
-                              <span>{row.supplier}</span>
-                              {row.matchedSales.length > 0 && (
-                                <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.2 rounded font-bold ml-1">
-                                  {row.matchedSales.length} {row.matchedSales.length === 1 ? 'buyer' : 'buyers'}
+                                  <span className="w-4 h-4 shrink-0 inline-block" />
+                                )}
+                                <span>{row.supplier}</span>
+                                {row.matchedSales.length > 0 && (
+                                  <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.2 rounded font-bold ml-1">
+                                    {row.matchedSales.length} {row.matchedSales.length === 1 ? 'buyer' : 'buyers'}
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="py-3 px-3 font-mono text-slate-500">
+                              {row.poId && row.poId.trim() !== '' ? (
+                                <span className="bg-slate-100 border border-slate-300 px-2 py-0.5 rounded text-[11px] font-bold text-emerald-700">
+                                  {row.poId}
                                 </span>
+                              ) : (
+                                '-'
                               )}
-                            </div>
-                          </td>
-                          <td className="py-3 px-3 font-mono text-slate-500">
+                            </td>
+                            <td className="py-3 px-3 text-right font-mono">{formatQty(row.qty)}</td>
+                            <td className="py-3 px-3 text-right font-mono text-blue-600 font-bold">{formatQty(row.soldQty)}</td>
+                            <td className="py-3 px-3 text-right font-mono font-extrabold text-emerald-600">
+                              {formatQty(row.availStock)}
+                            </td>
+                            <td className="py-3 px-3 text-right font-mono">{formatCurrency(row.purValue)}</td>
+                            <td className="py-3 px-3 text-right font-mono text-emerald-600 font-bold">{formatCurrency(row.saleValue)}</td>
+                            <td className={`py-3 px-3 text-right font-mono font-bold ${Number(row.margin) >= 0 ? 'text-emerald-700' : 'text-rose-600'}`}>
+                              {formatCurrency(row.margin)}
+                            </td>
+                            <td className="py-3 px-3 text-right font-mono font-bold">
+                              <span className={`px-2 py-0.5 rounded text-[11px] ${
+                                Number(row.marginPct) > 0 
+                                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' 
+                                  : 'bg-slate-100 text-slate-500'
+                              }`}>
+                                {row.marginPct}%
+                              </span>
+                            </td>
+                          </tr>
+
+                          {expandedRows.includes(row.id) && (
+                            <tr key={`sub-${row.id}`} className="bg-slate-50 border-b border-slate-200">
+                              <td colSpan="11" className="p-3 sm:p-4 bg-emerald-50/20">
+                                <div className="bg-white border border-emerald-200 rounded-xl p-3 sm:p-4 shadow-xs space-y-2.5">
+                                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                                    <div className="flex items-center gap-2">
+                                      <UsersIcon className="w-4 h-4 text-emerald-600" />
+                                      <h4 className="text-xs font-bold text-slate-900">
+                                        Buyer Breakdown for {row.supplier} {row.poId ? `(PO ID: ${row.poId})` : ''}
+                                      </h4>
+                                    </div>
+                                    <span className="text-[11px] text-slate-500 font-medium">
+                                      Total Sales: <strong className="text-emerald-700 font-mono">{formatCurrency(row.saleValue)}</strong> ({formatQty(row.soldQty)} Kg)
+                                    </span>
+                                  </div>
+
+                                  {row.matchedSales.length === 0 ? (
+                                    <p className="text-xs text-slate-400 italic py-1">
+                                      No sales recorded yet against this supplier trade batch.
+                                    </p>
+                                  ) : (
+                                    <div className="overflow-x-auto">
+                                      <table className="w-full text-left text-xs text-slate-700">
+                                        <thead className="bg-slate-50 text-slate-500 text-[10px] uppercase font-mono font-semibold border-b border-slate-200">
+                                          <tr>
+                                            <th className="py-2 px-2">Sale Date</th>
+                                            <th className="py-2 px-2">Buyer Name</th>
+                                            <th className="py-2 px-2">PO ID</th>
+                                            <th className="py-2 px-2 text-right">Qty Sold (Kg)</th>
+                                            <th className="py-2 px-2 text-right">Sale Price (SP)</th>
+                                            <th className="py-2 px-2 text-right">Sale Value (₹)</th>
+                                            <th className="py-2 px-2 text-center">Payment Status</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-100 font-medium">
+                                          {row.matchedSales.map((sale, sIdx) => (
+                                            <tr key={sale.id || sIdx} className="hover:bg-slate-50/80">
+                                              <td className="py-2 px-2 font-mono text-slate-600">{sale.date}</td>
+                                              <td className="py-2 px-2 font-semibold text-slate-900">{sale.buyer}</td>
+                                              <td className="py-2 px-2 font-mono text-slate-500">
+                                                {sale.poId && sale.poId.trim() !== '' ? sale.poId : (row.poId || '-')}
+                                              </td>
+                                              <td className="py-2 px-2 text-right font-mono text-blue-600 font-bold">{formatQty(sale.qty)}</td>
+                                              <td className="py-2 px-2 text-right font-mono">{sale.sp > 0 ? `₹${sale.sp}` : '-'}</td>
+                                              <td className="py-2 px-2 text-right font-mono font-bold text-emerald-600">{formatCurrency(sale.saleVal)}</td>
+                                              <td className="py-2 px-2 text-center">
+                                                {sale.status === 'Collected' ? (
+                                                  <span className="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-semibold">Collected</span>
+                                                ) : sale.status === 'Pending' ? (
+                                                  <span className="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-full font-semibold">Pending</span>
+                                                ) : (
+                                                  <span className="text-slate-400 text-[10px]">-</span>
+                                                )}
+                                              </td>
+                                            </tr>
+                                          ))}
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </React.Fragment>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'aging' && (
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 space-y-4 shadow-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                      <HourglassIcon className="w-4 h-4 text-amber-600" />
+                      Stock Ageing Analysis (Calculated against Today: 24th Sep 2026)
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Tracks days elapsed since purchase date for every supplier batch
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl cursor-pointer hover:bg-slate-200 transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={onlyAvailableStock}
+                        onChange={(e) => setOnlyAvailableStock(e.target.checked)}
+                        className="rounded text-emerald-600 focus:ring-emerald-500"
+                      />
+                      <span>Show Only Unsold Stock (&gt; 0 Kg)</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-emerald-500 shrink-0" />
+                      <span className="text-xs font-bold text-emerald-900">Fresh Stock (&lt; 10 Days)</span>
+                    </div>
+                    <span className="text-xs font-mono font-bold text-emerald-700">
+                      {supplierInventory.filter(i => i.ageingDays < 10).length} Batches
+                    </span>
+                  </div>
+
+                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-amber-500 shrink-0" />
+                      <span className="text-xs font-bold text-amber-900">Moderate Age (10 - 30 Days)</span>
+                    </div>
+                    <span className="text-xs font-mono font-bold text-amber-700">
+                      {supplierInventory.filter(i => i.ageingDays >= 10 && i.ageingDays <= 30).length} Batches
+                    </span>
+                  </div>
+
+                  <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-rose-500 shrink-0" />
+                      <span className="text-xs font-bold text-rose-900">Older Stock (&gt; 30 Days)</span>
+                    </div>
+                    <span className="text-xs font-mono font-bold text-rose-700">
+                      {supplierInventory.filter(i => i.ageingDays > 30).length} Batches
+                    </span>
+                  </div>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs sm:text-sm text-slate-700">
+                    <thead className="bg-slate-100 text-slate-600 text-[11px] uppercase font-mono font-bold">
+                      <tr>
+                        <th className="py-3 px-3 rounded-l-xl">SKU Name</th>
+                        <th className="py-3 px-3">Purchase Date</th>
+                        <th className="py-3 px-3">Supplier Name</th>
+                        <th className="py-3 px-3">PO ID</th>
+                        <th className="py-3 px-3 text-right">Purchased Qty (Kg)</th>
+                        <th className="py-3 px-3 text-right">Available Stock (Kg)</th>
+                        <th className="py-3 px-3 text-center rounded-r-xl">Stock Ageing</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 font-medium">
+                      {ageingList.map((row) => (
+                        <tr key={row.id} className="hover:bg-slate-50 transition-colors">
+                          <td className="py-3.5 px-3 font-bold text-amber-700">{row.sku}</td>
+                          <td className="py-3.5 px-3 font-mono text-slate-600">{row.date}</td>
+                          <td className="py-3.5 px-3 font-semibold text-slate-900">{row.supplier}</td>
+                          <td className="py-3.5 px-3 font-mono text-slate-500">
                             {row.poId && row.poId.trim() !== '' ? (
                               <span className="bg-slate-100 border border-slate-300 px-2 py-0.5 rounded text-[11px] font-bold text-emerald-700">
                                 {row.poId}
@@ -480,427 +725,221 @@ export default function App() {
                               '-'
                             )}
                           </td>
-                          <td className="py-3 px-3 text-right font-mono">{formatQty(row.qty)}</td>
-                          <td className="py-3 px-3 text-right font-mono text-blue-600 font-bold">{formatQty(row.soldQty)}</td>
-                          <td className="py-3 px-3 text-right font-mono font-extrabold text-emerald-600">
+                          <td className="py-3.5 px-3 text-right font-mono">{formatQty(row.qty)}</td>
+                          <td className="py-3.5 px-3 text-right font-mono font-extrabold text-emerald-600">
                             {formatQty(row.availStock)}
                           </td>
-                          <td className="py-3 px-3 text-right font-mono">{formatCurrency(row.purValue)}</td>
-                          <td className="py-3 px-3 text-right font-mono text-emerald-600 font-bold">{formatCurrency(row.saleValue)}</td>
-                          <td className={`py-3 px-3 text-right font-mono font-bold ${Number(row.margin) >= 0 ? 'text-emerald-700' : 'text-rose-600'}`}>
-                            {formatCurrency(row.margin)}
-                          </td>
-                          <td className="py-3 px-3 text-right font-mono font-bold">
-                            <span className={`px-2 py-0.5 rounded text-[11px] ${
-                              Number(row.marginPct) > 0 
-                                ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' 
-                                : 'bg-slate-100 text-slate-500'
+                          <td className="py-3.5 px-3 text-center font-mono">
+                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
+                              row.ageingDays < 10
+                                ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                                : row.ageingDays <= 30
+                                ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                                : 'bg-rose-100 text-rose-800 border border-rose-300'
                             }`}>
-                              {row.marginPct}%
+                              <HourglassIcon className="w-3.5 h-3.5" />
+                              {row.ageingDays} Days
                             </span>
                           </td>
                         </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
 
-                        {/* Expandable Buyer Details Sub-Table */}
-                        {expandedRows.includes(row.id) && (
-                          <tr key={`sub-${row.id}`} className="bg-slate-50 border-b border-slate-200">
-                            <td colSpan="11" className="p-3 sm:p-4 bg-emerald-50/20">
-                              <div className="bg-white border border-emerald-200 rounded-xl p-3 sm:p-4 shadow-xs space-y-2.5">
-                                <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                                  <div className="flex items-center gap-2">
-                                    <Users className="w-4 h-4 text-emerald-600" />
-                                    <h4 className="text-xs font-bold text-slate-900">
-                                      Buyer Breakdown for {row.supplier} {row.poId ? `(PO ID: ${row.poId})` : ''}
-                                    </h4>
-                                  </div>
-                                  <span className="text-[11px] text-slate-500 font-medium">
-                                    Total Sales: <strong className="text-emerald-700 font-mono">{formatCurrency(row.saleValue)}</strong> ({formatQty(row.soldQty)} Kg)
-                                  </span>
-                                </div>
+            {activeTab === 'buyers' && (
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 space-y-4 shadow-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-200">
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                      <UsersIcon className="w-4 h-4 text-emerald-600" />
+                      Buyer Sales Ledger
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Detailed sales log showing SKU, Buyer Name, PO ID, Quantity, Sale Price & Sale Value
+                    </p>
+                  </div>
+                  <span className="text-xs text-slate-600 bg-slate-100 border border-slate-200 px-3 py-1 rounded-lg font-medium">
+                    Total {filteredSales.length} Sales Entries
+                  </span>
+                </div>
 
-                                {row.matchedSales.length === 0 ? (
-                                  <p className="text-xs text-slate-400 italic py-1">
-                                    No sales recorded yet against this supplier trade batch.
-                                  </p>
-                                ) : (
-                                  <div className="overflow-x-auto">
-                                    <table className="w-full text-left text-xs text-slate-700">
-                                      <thead className="bg-slate-50 text-slate-500 text-[10px] uppercase font-mono font-semibold border-b border-slate-200">
-                                        <tr>
-                                          <th className="py-2 px-2">Sale Date</th>
-                                          <th className="py-2 px-2">Buyer Name</th>
-                                          <th className="py-2 px-2">PO ID</th>
-                                          <th className="py-2 px-2 text-right">Qty Sold (Kg)</th>
-                                          <th className="py-2 px-2 text-right">Sale Price (SP)</th>
-                                          <th className="py-2 px-2 text-right">Sale Value (₹)</th>
-                                          <th className="py-2 px-2 text-center">Payment Status</th>
-                                        </tr>
-                                      </thead>
-                                      <tbody className="divide-y divide-slate-100 font-medium">
-                                        {row.matchedSales.map((sale, sIdx) => (
-                                          <tr key={sale.id || sIdx} className="hover:bg-slate-50/80">
-                                            <td className="py-2 px-2 font-mono text-slate-600">{sale.date}</td>
-                                            <td className="py-2 px-2 font-semibold text-slate-900">{sale.buyer}</td>
-                                            <td className="py-2 px-2 font-mono text-slate-500">
-                                              {sale.poId && sale.poId.trim() !== '' ? sale.poId : (row.poId || '-')}
-                                            </td>
-                                            <td className="py-2 px-2 text-right font-mono text-blue-600 font-bold">{formatQty(sale.qty)}</td>
-                                            <td className="py-2 px-2 text-right font-mono">{sale.sp > 0 ? `₹${sale.sp}` : '-'}</td>
-                                            <td className="py-2 px-2 text-right font-mono font-bold text-emerald-600">{formatCurrency(sale.saleVal)}</td>
-                                            <td className="py-2 px-2 text-center">
-                                              {sale.status === 'Collected' ? (
-                                                <span className="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-semibold">Collected</span>
-                                              ) : sale.status === 'Pending' ? (
-                                                <span className="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-full font-semibold">Pending</span>
-                                              ) : (
-                                                <span className="text-slate-400 text-[10px]">-</span>
-                                              )}
-                                            </td>
-                                          </tr>
-                                        ))}
-                                      </tbody>
-                                    </table>
-                                  </div>
-                                )}
-                              </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs sm:text-sm text-slate-700">
+                    <thead className="bg-slate-100 text-slate-600 text-[11px] uppercase font-mono font-bold">
+                      <tr>
+                        <th className="py-3 px-3 rounded-l-xl">SKU</th>
+                        <th className="py-3 px-3">Date</th>
+                        <th className="py-3 px-3">PO ID</th>
+                        <th className="py-3 px-3">Buyer Name</th>
+                        <th className="py-3 px-3 text-right">Qty (Kg)</th>
+                        <th className="py-3 px-3 text-right">Sale Price (SP)</th>
+                        <th className="py-3 px-3 text-right">Sale Value</th>
+                        <th className="py-3 px-3 text-center rounded-r-xl">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {filteredSales.map((sale) => (
+                        <tr key={sale.id} className="hover:bg-slate-50 transition-colors">
+                          <td className="py-3 px-3 font-bold text-amber-700">{sale.sku}</td>
+                          <td className="py-3 px-3 font-mono text-slate-600">{sale.date}</td>
+                          <td className="py-3 px-3 font-mono text-slate-500">
+                            {sale.poId && sale.poId.trim() !== '' ? (
+                              <span className="bg-slate-100 border border-slate-300 px-2 py-0.5 rounded text-[11px] font-bold text-emerald-700">
+                                {sale.poId}
+                              </span>
+                            ) : (
+                              '-'
+                            )}
+                          </td>
+                          <td className="py-3 px-3 font-semibold text-slate-900">{sale.buyer}</td>
+                          <td className="py-3 px-3 text-right font-mono font-bold text-blue-600">{formatQty(sale.qty)}</td>
+                          <td className="py-3 px-3 text-right font-mono">
+                            {sale.sp > 0 ? `₹${sale.sp}` : '-'}
+                          </td>
+                          <td className="py-3 px-3 text-right font-mono font-bold text-emerald-600">{formatCurrency(sale.saleVal)}</td>
+                          <td className="py-3 px-3 text-center">
+                            {sale.status === 'Collected' ? (
+                              <span className="bg-emerald-100 text-emerald-800 border border-emerald-200 text-[11px] px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 font-semibold">
+                                <CheckCircleIcon className="w-3 h-3" /> Collected
+                              </span>
+                            ) : sale.status === 'Pending' ? (
+                              <span className="bg-amber-100 text-amber-800 border border-amber-200 text-[11px] px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 font-semibold">
+                                <ClockIcon className="w-3 h-3" /> Pending
+                              </span>
+                            ) : (
+                              <span className="text-slate-400 text-[11px]">-</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'expenses' && (
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 space-y-4 shadow-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-200">
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                      <ReceiptIcon className="w-4 h-4 text-rose-600" />
+                      Monthly Expenses Detail
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Numeric log of store operational expenses from Mandi Expense Base sheet
+                    </p>
+                  </div>
+                  <span className="text-xs text-rose-700 font-bold bg-rose-50 border border-rose-200 px-3 py-1 rounded-lg">
+                    Total: {formatCurrency(totalExpensesVal)}
+                  </span>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs sm:text-sm text-slate-700">
+                    <thead className="bg-slate-100 text-slate-600 text-[11px] uppercase font-mono font-bold">
+                      <tr>
+                        <th className="py-3 px-4 rounded-l-xl">Date</th>
+                        <th className="py-3 px-4">Month</th>
+                        <th className="py-3 px-4">Expense Type</th>
+                        <th className="py-3 px-4 text-right rounded-r-xl">Expense Value (₹)</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {filteredExpenses.map((exp) => (
+                        <tr key={exp.id} className="hover:bg-slate-50 transition-colors">
+                          <td className="py-3.5 px-4 font-mono font-medium text-slate-900">{exp.date}</td>
+                          <td className="py-3.5 px-4 font-mono text-slate-500">{exp.month}</td>
+                          <td className="py-3.5 px-4 font-semibold text-rose-700">{exp.type}</td>
+                          <td className="py-3.5 px-4 text-right font-mono font-bold text-rose-600">
+                            {formatCurrency(exp.val)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'ledger' && (
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 space-y-4 shadow-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-200">
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                      <FileSpreadsheetIcon className="w-4 h-4 text-emerald-600" />
+                      Overall Ledger (Combined 3 Sheets View)
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Consolidated master ledger matching purchases, sales, margins & PO IDs
+                    </p>
+                  </div>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs text-slate-700">
+                    <thead className="bg-slate-100 text-slate-600 text-[10px] uppercase font-mono font-bold">
+                      <tr>
+                        <th className="py-3 px-2 rounded-l-lg">SKU</th>
+                        <th className="py-3 px-2">Pur Date</th>
+                        <th className="py-3 px-2">Month</th>
+                        <th className="py-3 px-2">PO ID</th>
+                        <th className="py-3 px-2">Supplier Name</th>
+                        <th className="py-3 px-2">Buyer Name</th>
+                        <th className="py-3 px-2 text-right">Purchased Qty</th>
+                        <th className="py-3 px-2 text-right">Sold Stock</th>
+                        <th className="py-3 px-3 text-right">Purchase Value</th>
+                        <th className="py-3 px-2 text-right">Sale Value</th>
+                        <th className="py-3 px-2 text-right">Margin (₹)</th>
+                        <th className="py-3 px-2 text-center rounded-r-lg">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 font-mono">
+                      {supplierInventory.map((item) => {
+                        const primaryBuyer = item.matchedSales.length > 0 ? item.matchedSales[0].buyer : '-';
+                        return (
+                          <tr key={item.id} className="hover:bg-slate-50 transition-colors">
+                            <td className="py-3 px-2 font-bold text-amber-700 font-sans">{item.sku}</td>
+                            <td className="py-3 px-2 text-slate-600">{item.date}</td>
+                            <td className="py-3 px-2 text-slate-500">{item.month}</td>
+                            <td className="py-3 px-2 text-emerald-700 font-bold">{item.poId && item.poId.trim() !== '' ? item.poId : '-'}</td>
+                            <td className="py-3 px-2 font-sans font-semibold text-slate-900">{item.supplier}</td>
+                            <td className="py-3 px-2 font-sans text-slate-700">{primaryBuyer}</td>
+                            <td className="py-3 px-2 text-right font-bold text-slate-900">{formatQty(item.qty)}</td>
+                            <td className="py-3 px-2 text-right text-blue-600 font-bold">{formatQty(item.soldQty)}</td>
+                            <td className="py-3 px-2 text-right">{formatCurrency(item.purValue)}</td>
+                            <td className="py-3 px-2 text-right text-emerald-600 font-bold">{formatCurrency(item.saleValue)}</td>
+                            <td className={`py-3 px-2 text-right font-bold ${Number(item.margin) >= 0 ? 'text-emerald-700' : 'text-rose-600'}`}>
+                              {formatCurrency(item.margin)}
+                            </td>
+                            <td className="py-3 px-2 text-center font-sans">
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                                item.status === 'Paid' 
+                                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                                  : 'bg-amber-100 text-amber-800 border border-amber-200'
+                              }`}>
+                                {item.status}
+                              </span>
                             </td>
                           </tr>
-                        )}
-                      </React.Fragment>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* TAB 2: Stock Ageing Analysis Table */}
-        {activeTab === 'aging' && (
-          <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 space-y-4 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
-              <div>
-                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <Hourglass className="w-4 h-4 text-amber-600" />
-                  Stock Ageing Analysis (Calculated against Today: 24th Sep 2026)
-                </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Tracks days elapsed since purchase date for every supplier batch
-                </p>
-              </div>
-
-              {/* Filter toggle for available stock */}
-              <div className="flex items-center gap-2">
-                <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl cursor-pointer hover:bg-slate-200 transition-colors">
-                  <input
-                    type="checkbox"
-                    checked={onlyAvailableStock}
-                    onChange={(e) => setOnlyAvailableStock(e.target.checked)}
-                    className="rounded text-emerald-600 focus:ring-emerald-500"
-                  />
-                  <span>Show Only Unsold Stock (&gt; 0 Kg)</span>
-                </label>
-              </div>
-            </div>
-
-            {/* Ageing Summary Legend */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-emerald-500 shrink-0" />
-                  <span className="text-xs font-bold text-emerald-900">Fresh Stock (&lt; 10 Days)</span>
+                        );
+                      })}
+                    </tbody>
+                  </table>
                 </div>
-                <span className="text-xs font-mono font-bold text-emerald-700">
-                  {supplierInventory.filter(i => i.ageingDays < 10).length} Batches
-                </span>
               </div>
+            )}
 
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-amber-500 shrink-0" />
-                  <span className="text-xs font-bold text-amber-900">Moderate Age (10 - 30 Days)</span>
-                </div>
-                <span className="text-xs font-mono font-bold text-amber-700">
-                  {supplierInventory.filter(i => i.ageingDays >= 10 && i.ageingDays <= 30).length} Batches
-                </span>
-              </div>
-
-              <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-rose-500 shrink-0" />
-                  <span className="text-xs font-bold text-rose-900">Older Stock (&gt; 30 Days)</span>
-                </div>
-                <span className="text-xs font-mono font-bold text-rose-700">
-                  {supplierInventory.filter(i => i.ageingDays > 30).length} Batches
-                </span>
-              </div>
-            </div>
-
-            {/* Dedicated Stock Ageing Table */}
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs sm:text-sm text-slate-700">
-                <thead className="bg-slate-100 text-slate-600 text-[11px] uppercase font-mono font-bold">
-                  <tr>
-                    <th className="py-3 px-3 rounded-l-xl">SKU Name</th>
-                    <th className="py-3 px-3">Purchase Date</th>
-                    <th className="py-3 px-3">Supplier Name</th>
-                    <th className="py-3 px-3">PO ID</th>
-                    <th className="py-3 px-3 text-right">Purchased Qty (Kg)</th>
-                    <th className="py-3 px-3 text-right">Available Stock (Kg)</th>
-                    <th className="py-3 px-3 text-center rounded-r-xl">Stock Ageing</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-medium">
-                  {ageingList.length === 0 ? (
-                    <tr>
-                      <td colSpan="7" className="text-center py-8 text-slate-400">
-                        No stock entries found for current selection.
-                      </td>
-                    </tr>
-                  ) : (
-                    ageingList.map((row) => (
-                      <tr key={row.id} className="hover:bg-slate-50 transition-colors">
-                        <td className="py-3.5 px-3 font-bold text-amber-700">{row.sku}</td>
-                        <td className="py-3.5 px-3 font-mono text-slate-600">{row.date}</td>
-                        <td className="py-3.5 px-3 font-semibold text-slate-900">{row.supplier}</td>
-                        <td className="py-3.5 px-3 font-mono text-slate-500">
-                          {row.poId && row.poId.trim() !== '' ? (
-                            <span className="bg-slate-100 border border-slate-300 px-2 py-0.5 rounded text-[11px] font-bold text-emerald-700">
-                              {row.poId}
-                            </span>
-                          ) : (
-                            '-'
-                          )}
-                        </td>
-                        <td className="py-3.5 px-3 text-right font-mono">{formatQty(row.qty)}</td>
-                        <td className="py-3.5 px-3 text-right font-mono font-extrabold text-emerald-600">
-                          {formatQty(row.availStock)}
-                        </td>
-                        <td className="py-3.5 px-3 text-center font-mono">
-                          <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold shadow-2xs ${
-                            row.ageingDays < 10
-                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                              : row.ageingDays <= 30
-                              ? 'bg-amber-100 text-amber-800 border border-amber-300'
-                              : 'bg-rose-100 text-rose-800 border border-rose-300'
-                          }`}>
-                            <Hourglass className="w-3.5 h-3.5" />
-                            {row.ageingDays} Days
-                          </span>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
           </div>
-        )}
+        </div>
+      );
+    }
 
-        {/* TAB 3: Buyer Sales Ledger */}
-        {activeTab === 'buyers' && (
-          <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 space-y-4 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-200">
-              <div>
-                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <Users className="w-4 h-4 text-emerald-600" />
-                  Buyer Sales Ledger
-                </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Detailed sales log showing SKU, Buyer Name, PO ID, Quantity, Sale Price & Sale Value
-                </p>
-              </div>
-              <span className="text-xs text-slate-600 bg-slate-100 border border-slate-200 px-3 py-1 rounded-lg font-medium">
-                Total {filteredSales.length} Sales Entries
-              </span>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs sm:text-sm text-slate-700">
-                <thead className="bg-slate-100 text-slate-600 text-[11px] uppercase font-mono font-bold">
-                  <tr>
-                    <th className="py-3 px-3 rounded-l-xl">SKU</th>
-                    <th className="py-3 px-3">Date</th>
-                    <th className="py-3 px-3">PO ID</th>
-                    <th className="py-3 px-3">Buyer Name</th>
-                    <th className="py-3 px-3 text-right">Qty (Kg)</th>
-                    <th className="py-3 px-3 text-right">Sale Price (SP)</th>
-                    <th className="py-3 px-3 text-right">Sale Value</th>
-                    <th className="py-3 px-3 text-center rounded-r-xl">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {filteredSales.length === 0 ? (
-                    <tr>
-                      <td colSpan="8" className="text-center py-8 text-slate-400">
-                        No sales transactions found for this selection.
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredSales.map((sale) => (
-                      <tr key={sale.id} className="hover:bg-slate-50 transition-colors">
-                        <td className="py-3 px-3 font-bold text-amber-700">{sale.sku}</td>
-                        <td className="py-3 px-3 font-mono text-slate-600">{sale.date}</td>
-                        <td className="py-3 px-3 font-mono text-slate-500">
-                          {sale.poId && sale.poId.trim() !== '' ? (
-                            <span className="bg-slate-100 border border-slate-300 px-2 py-0.5 rounded text-[11px] font-bold text-emerald-700">
-                              {sale.poId}
-                            </span>
-                          ) : (
-                            '-'
-                          )}
-                        </td>
-                        <td className="py-3 px-3 font-semibold text-slate-900">{sale.buyer}</td>
-                        <td className="py-3 px-3 text-right font-mono font-bold text-blue-600">{formatQty(sale.qty)}</td>
-                        <td className="py-3 px-3 text-right font-mono">
-                          {sale.sp > 0 ? `₹${sale.sp}` : '-'}
-                        </td>
-                        <td className="py-3 px-3 text-right font-mono font-bold text-emerald-600">{formatCurrency(sale.saleVal)}</td>
-                        <td className="py-3 px-3 text-center">
-                          {sale.status === 'Collected' ? (
-                            <span className="bg-emerald-100 text-emerald-800 border border-emerald-200 text-[11px] px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 font-semibold">
-                              <CheckCircle className="w-3 h-3" /> Collected
-                            </span>
-                          ) : sale.status === 'Pending' ? (
-                            <span className="bg-amber-100 text-amber-800 border border-amber-200 text-[11px] px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 font-semibold">
-                              <Clock className="w-3 h-3" /> Pending
-                            </span>
-                          ) : (
-                            <span className="text-slate-400 text-[11px]">-</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* TAB 4: Monthly Expenses Detail */}
-        {activeTab === 'expenses' && (
-          <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 space-y-4 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-200">
-              <div>
-                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <Receipt className="w-4 h-4 text-rose-600" />
-                  Monthly Expenses Detail
-                </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Numeric log of store operational expenses from Mandi Expense Base sheet
-                </p>
-              </div>
-              <span className="text-xs text-rose-700 font-bold bg-rose-50 border border-rose-200 px-3 py-1 rounded-lg">
-                Total: {formatCurrency(totalExpensesVal)}
-              </span>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs sm:text-sm text-slate-700">
-                <thead className="bg-slate-100 text-slate-600 text-[11px] uppercase font-mono font-bold">
-                  <tr>
-                    <th className="py-3 px-4 rounded-l-xl">Date</th>
-                    <th className="py-3 px-4">Month</th>
-                    <th className="py-3 px-4">Expense Type</th>
-                    <th className="py-3 px-4 text-right rounded-r-xl">Expense Value (₹)</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {filteredExpenses.length === 0 ? (
-                    <tr>
-                      <td colSpan="4" className="text-center py-8 text-slate-400">
-                        No expenses logged for this month filter.
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredExpenses.map((exp) => (
-                      <tr key={exp.id} className="hover:bg-slate-50 transition-colors">
-                        <td className="py-3.5 px-4 font-mono font-medium text-slate-900">{exp.date}</td>
-                        <td className="py-3.5 px-4 font-mono text-slate-500">{exp.month}</td>
-                        <td className="py-3.5 px-4 font-semibold text-rose-700">{exp.type}</td>
-                        <td className="py-3.5 px-4 text-right font-mono font-bold text-rose-600">
-                          {formatCurrency(exp.val)}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* TAB 5: Overall Ledger */}
-        {activeTab === 'ledger' && (
-          <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 space-y-4 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-200">
-              <div>
-                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-                  Overall Ledger (Combined 3 Sheets View)
-                </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Consolidated master ledger matching purchases, sales, margins & PO IDs
-                </p>
-              </div>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-slate-700">
-                <thead className="bg-slate-100 text-slate-600 text-[10px] uppercase font-mono font-bold">
-                  <tr>
-                    <th className="py-3 px-2 rounded-l-lg">SKU</th>
-                    <th className="py-3 px-2">Pur Date</th>
-                    <th className="py-3 px-2">Month</th>
-                    <th className="py-3 px-2">PO ID</th>
-                    <th className="py-3 px-2">Supplier Name</th>
-                    <th className="py-3 px-2">Buyer Name</th>
-                    <th className="py-3 px-2 text-right">Purchased Qty</th>
-                    <th className="py-3 px-2 text-right">Sold Stock</th>
-                    <th className="py-3 px-2 text-right">Purchase Value</th>
-                    <th className="py-3 px-2 text-right">Sale Value</th>
-                    <th className="py-3 px-2 text-right">Margin (₹)</th>
-                    <th className="py-3 px-2 text-center rounded-r-lg">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-mono">
-                  {supplierInventory.map((item) => {
-                    const primaryBuyer = item.matchedSales.length > 0 ? item.matchedSales[0].buyer : '-';
-                    return (
-                      <tr key={item.id} className="hover:bg-slate-50 transition-colors">
-                        <td className="py-3 px-2 font-bold text-amber-700 font-sans">{item.sku}</td>
-                        <td className="py-3 px-2 text-slate-600">{item.date}</td>
-                        <td className="py-3 px-2 text-slate-500">{item.month}</td>
-                        <td className="py-3 px-2 text-emerald-700 font-bold">{item.poId && item.poId.trim() !== '' ? item.poId : '-'}</td>
-                        <td className="py-3 px-2 font-sans font-semibold text-slate-900">{item.supplier}</td>
-                        <td className="py-3 px-2 font-sans text-slate-700">{primaryBuyer}</td>
-                        <td className="py-3 px-2 text-right font-bold text-slate-900">{formatQty(item.qty)}</td>
-                        <td className="py-3 px-2 text-right text-blue-600 font-bold">{formatQty(item.soldQty)}</td>
-                        <td className="py-3 px-2 text-right">{formatCurrency(item.purValue)}</td>
-                        <td className="py-3 px-2 text-right text-emerald-600 font-bold">{formatCurrency(item.saleValue)}</td>
-                        <td className={`py-3 px-2 text-right font-bold ${Number(item.margin) >= 0 ? 'text-emerald-700' : 'text-rose-600'}`}>
-                          {formatCurrency(item.margin)}
-                        </td>
-                        <td className="py-3 px-2 text-center font-sans">
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            item.status === 'Paid' 
-                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                              : 'bg-amber-100 text-amber-800 border border-amber-200'
-                          }`}>
-                            {item.status}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-      </div>
-    </div>
-  );
-}
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
